@@ -95,3 +95,11 @@ This destroys all CUL tokens.
 Even if the community somehow manages to keep the DAO going, the contract autodestructs after 52 weeks.  
 
 TLDR: Probably shouldn't take investment advice from text written by a stranger and posted to a webpage literally titled "Doom Cult Society".
+
+### Is there a Discord?
+
+There is no Discord, Slack, Whatsapp, Twitter or Tinder. Only Github.
+
+### Is Doom Cult Society audited?
+
+It's not that kind of crypto project. More of a "threw together over a weekend" kind of project. Use at your own risk.
