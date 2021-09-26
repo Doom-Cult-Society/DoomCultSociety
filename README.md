@@ -86,7 +86,7 @@ Call the `attractCultists` method on the Doom Cult Society DAO contract. This wi
 
 ### `attractCultists` doesn't work!
 
-Somehow all 30,000 CUL have been distributed and I am afraid you are too late. I would suggest posting low-effort memes on Twitter until somebody tips you in CUL.
+All 30,000 CUL have been distributed and I am afraid you are too late. I would suggest posting low-effort memes on Twitter until somebody tips you in CUL.
 
 ### Should I invest in CUL?
 
