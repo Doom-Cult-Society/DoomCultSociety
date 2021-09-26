@@ -9,16 +9,16 @@
 **No fees, only gas. Doom Cult Society is for everyone!**
 
 > 1. Attract cultists
-> 2. Sacrifice cultists to placate the wrath The DAO
+> 2. Sacrifice cultists to placate the wrath of the Doom Cult Society DAO
 > 3. Survive for as long as possible
 
-What is Doom Cult Society? There are two phases
+Doom Cult Society has two phases:
 
 ***
 
 # Phase 1: Prognostication
 
-Hordes of cultists are searching for an aspiring demagogue to lead them into this brave new world. Rally cultists to your side quickly before its too late!
+30,000 cultists are searching for an aspiring demagogue to lead them into this brave new world. Rally cultists to your side quickly before its too late!
 
 **Phase 1 Ends When**: All cultists have been acquired OR 4 weeks pass.
 
@@ -35,8 +35,7 @@ One the DAO is destroyed, it's game over. Previously minted NFTs will persist bu
 The community can keep the Doom Cult Society alive for **52** weeks, but no longer.  
 It is a doom cult after all.
 
-Players who survive to week 52 can sacrifice a cultist and mint a Doom Cult Society NFT.
-This can be considered to be the game's 'win condition' ...whatever that means.
+Minting a Doom Cult Society NFT on week 52 can be considered the game's 'win condition' ...whatever that means.
 
 ***
 
