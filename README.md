@@ -52,7 +52,7 @@ The Doom Cult Society is designed to be played using the Doom Cult Society DAO c
 
 ***
 
-Doom Cult Society is open source software licensed under the Apache-2.0 license. Please feel free to contribute, share, fork etc.
+Doom Cult Society is open source software licensed under the Apache-2.0 license. Please feel free to contribute, share, fork, vampire, heckle etc.
 
 ***
 
