@@ -12,10 +12,12 @@ contract ERC20 {
     uint256 internal _totalSupply;
     string private constant _name = 'Doom Cult Society DAO';
     string private constant _symbol = 'CUL';
-    bytes32 internal constant TRANSFER_SIG = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
-    event Transfer(address indexed from, address indexed to, uint256 value);
 
+    uint256 internal constant ERROR_SIG = 0x08c379a000000000000000000000000000000000000000000000000000000000;
+    bytes32 internal constant TRANSFER_SIG = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
     bytes32 internal constant APPROVAL_SIG = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     constructor() {}
@@ -76,7 +78,7 @@ contract ERC20 {
             let currentAllowanceSlot := keccak256(0x00, 0x40)
             currentAllowance := sload(currentAllowanceSlot)
             if gt(amount, currentAllowance) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 40)
                 mstore(0x44, 'ERC20: transfer amount exceeds a')
@@ -97,7 +99,7 @@ contract ERC20 {
     ) internal {
         assembly {
             if or(iszero(sender), iszero(recipient)) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 37)
                 mstore(0x44, 'ERC20: transfer from the zero ad')
@@ -111,7 +113,7 @@ contract ERC20 {
             let senderBalance := sload(balancesSlot)
 
             if gt(amount, senderBalance) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 38)
                 mstore(0x44, 'ERC20: transfer amount exceeds b')
@@ -132,7 +134,7 @@ contract ERC20 {
     ) internal {
         assembly {
             if or(iszero(owner), iszero(spender)) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 36)
                 mstore(0x44, 'ERC20: approve from the zero add')
@@ -392,16 +394,17 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     // Token symbol
     string private constant _symbol = 'DED';
 
+    uint256 internal constant ERROR_SIG = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     // event signatures
     uint256 private constant APPROVAL_FOR_ALL_SIG = 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31;
     bytes32 internal constant TRANSFER_SIG = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
     bytes32 internal constant APPROVAL_SIG = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
 
     // Mapping from token ID to owner address
-    mapping(uint256 => address) private _owners;
+    mapping(uint256 => address) internal _owners;
 
     // Mapping owner address to token count
-    mapping(address => uint256) private _balances;
+    mapping(address => uint256) internal _balances;
 
     // Mapping from token ID to approved address
     mapping(uint256 => address) private _tokenApprovals;
@@ -431,7 +434,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     function balanceOf(address owner) public view virtual override returns (uint256 res) {
         assembly {
             if iszero(owner) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 42)
                 mstore(0x44, 'ERC721: balance query for the ze')
@@ -456,7 +459,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
             owner := sload(keccak256(0x00, 0x40))
 
             if iszero(owner) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 41)
                 mstore(0x44, 'ERC721: owner query for nonexist')
@@ -505,7 +508,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
 
         assembly {
             if eq(to, owner) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 33)
                 mstore(0x44, 'ERC721: approval to current owne')
@@ -516,7 +519,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
         bool approvedForAll = isApprovedForAll(owner, msg.sender);
         assembly {
             if iszero(or(eq(caller(), owner), approvedForAll)) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 55)
                 mstore(0x44, 'ERC721: approve caller is not ow')
@@ -536,7 +539,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
             mstore(0x00, tokenId)
             mstore(0x20, _owners.slot)
             if iszero(sload(keccak256(0x00, 0x40))) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 44)
                 mstore(0x44, 'ERC721: approved query for nonex')
@@ -556,7 +559,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     function setApprovalForAll(address operator, bool approved) public virtual override {
         assembly {
             if eq(operator, caller()) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 25)
                 mstore(0x44, 'ERC721: approve to caller')
@@ -647,7 +650,13 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
         bytes memory _data
     ) internal virtual {
         _transfer(from, to, tokenId);
-        require(_checkOnERC721Received(from, to, tokenId, _data), 'ERC721: transfer to non ERC721Receiver implementer');
+        bool isContract;
+        assembly {
+            isContract := gt(extcodesize(to), 0)
+        }
+        if (isContract) {
+            _checkOnERC721ReceivedContract(from, to, tokenId, _data);
+        }
     }
 
     /**
@@ -674,7 +683,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
             mstore(0x00, tokenId)
             mstore(0x20, _owners.slot)
             if iszero(sload(keccak256(0x00, 0x40))) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 44)
                 mstore(0x44, 'ERC721: operator query for nonex')
@@ -688,70 +697,13 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
             isApprovedForAll(owner, spender));
         assembly {
             if iszero(isApprovedOrOwner) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 49)
                 mstore(0x44, 'ERC721: transfer caller is not o')
                 mstore(0x64, 'wner nor approved')
                 revert(0x00, 0x84)
             }
-        }
-    }
-
-    /**
-     * @dev Safely mints `tokenId` and transfers it to `to`.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must not exist.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _safeMint(address to, uint256 tokenId) internal virtual {
-        _safeMint(to, tokenId, '');
-    }
-
-    /**
-     * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
-     * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-     */
-    function _safeMint(
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) internal virtual {
-        _mint(to, tokenId);
-        require(
-            _checkOnERC721Received(address(0), to, tokenId, _data),
-            'ERC721: transfer to non ERC721Receiver implementer'
-        );
-    }
-
-    /**
-     * @dev Mints `tokenId` and transfers it to `to`.
-     *
-     * WARNING: Usage of this method is discouraged, use {_safeMint} whenever possible
-     *
-     * Requirements:
-     *
-     * - `tokenId` must not exist.
-     * - `to` cannot be the zero address.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _mint(address to, uint256 tokenId) internal virtual {
-        require(to != address(0), 'ERC721: mint to the zero address');
-        require(!_exists(tokenId), 'ERC721: token already minted');
-
-        _beforeTokenTransfer(address(0), to, tokenId);
-
-        _balances[to] += 1;
-        _owners[tokenId] = to;
-
-        assembly {
-            mstore(0x00, tokenId)
-            log3(0x00, 0x20, TRANSFER_SIG, 0, to)
         }
     }
 
@@ -811,32 +763,26 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
      * @param to target address that will receive the tokens
      * @param tokenId uint256 ID of the token to be transferred
      * @param _data bytes optional data to send along with the call
-     * @return bool whether the call correctly returned the expected magic value
      */
-    function _checkOnERC721Received(
+    function _checkOnERC721ReceivedContract(
         address from,
         address to,
         uint256 tokenId,
         bytes memory _data
-    ) private returns (bool) {
-        bool isContract;
-        assembly {
-            isContract := gt(extcodesize(to), 0)
-        }
-        if (isContract) {
-            try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data) returns (bytes4 retval) {
-                return retval == IERC721Receiver(to).onERC721Received.selector;
-            } catch (bytes memory reason) {
-                if (reason.length == 0) {
-                    revert('ERC721: transfer to non ERC721Receiver implementer');
-                } else {
-                    assembly {
-                        revert(add(32, reason), mload(reason))
-                    }
+    ) internal {
+        try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data) returns (bytes4 retval) {
+            require(
+                retval == IERC721Receiver(to).onERC721Received.selector,
+                'ERC721: transfer to non ERC721Receiver implementer'
+            );
+        } catch (bytes memory reason) {
+            if (reason.length == 0) {
+                revert('ERC721: transfer to non ERC721Receiver implementer');
+            } else {
+                assembly {
+                    revert(add(32, reason), mload(reason))
                 }
             }
-        } else {
-            return true;
         }
     }
 
@@ -847,7 +793,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     mapping(uint256 => uint256) private _ownedTokensIndex;
 
     // Array with all token ids, used for enumeration
-    uint256[] private _allTokens;
+    uint256[] internal _allTokens;
 
     // Mapping from token id to position in the allTokens array
     mapping(uint256 => uint256) private _allTokensIndex;
@@ -917,25 +863,8 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
             delete _ownedTokensIndex[tokenId];
             delete _ownedTokens[from][lastTokenIndex];
         }
-        if (to == address(0)) {
-            // To prevent a gap in the tokens array, we store the last token in the index of the token to delete, and
-            // then delete the last slot (swap and pop).
-
-            uint256 lastTokenIndex = _allTokens.length - 1;
-            uint256 tokenIndex = _allTokensIndex[tokenId];
-
-            // When the token to delete is the last token, the swap operation is unnecessary. However, since this occurs so
-            // rarely (when the last minted token is burnt) that we still do the swap here to avoid the gas cost of adding
-            // an 'if' statement (like in _removeTokenFromOwnerEnumeration)
-            uint256 lastTokenId = _allTokens[lastTokenIndex];
-
-            _allTokens[tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
-            _allTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
-
-            // This also deletes the contents at the last position of the array
-            delete _allTokensIndex[tokenId];
-            _allTokens.pop();
-        } else if (to != from) {
+        // skip check to see if `to == address(0)`, all code paths that lead to this fn already rule this out
+        if (to != from) {
             uint256 length = balanceOf(to);
             _ownedTokens[to][length] = tokenId;
             _ownedTokensIndex[tokenId] = length;
@@ -943,6 +872,13 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     }
 }
 
+/**
+ * @dev DoomCultSocietyDAO
+ * Decentralized Autonomous Doom! Doooooooooooooooooooooooom!
+ *
+ * The DAO controls cultist tokens: CUL
+ * Cultist tokens are sacrificed in order to mint DoomCultSociety NFTs
+ */
 contract DoomCultSocietyDAO is ERC20 {
     uint256 internal constant WEEKS_UNTIL_OBLIVION = 52;
     uint256 internal constant SECONDS_PER_WEEK = 604800;
@@ -957,8 +893,6 @@ contract DoomCultSocietyDAO is ERC20 {
     uint256 public currentEpochTotalSacrificed;
     uint256 public lastEpochTotalSacrificed;
 
-    mapping(address => uint256) public cultistDevotations;
-
     uint256 private constant IT_HAS_AWOKEN_SIG = 0x21807e0b842b099372e0a04f56a3c00df1f88de6af9d3e3ebb06d4d6fac76a8d;
     event ItHasAwoken(uint256 startNumCultists);
 
@@ -968,12 +902,12 @@ contract DoomCultSocietyDAO is ERC20 {
     uint256 private constant OBLITERATE_SIG = 0x03d6576f6c77df8600e2667de4d5c1fbc7cb69b42d5eaa80345d8174d80af46b;
     event Obliterate(uint256 endNumCultists);
     bool public isAwake;
-    DoomCultSociety public doomCult;
+    DoomCultSociety public doomCultSociety;
 
     modifier onlyAwake() {
         assembly {
             if iszero(and(sload(isAwake.slot), 1)) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 14)
                 mstore(0x44, 'It Is Sleeping')
@@ -985,7 +919,7 @@ contract DoomCultSocietyDAO is ERC20 {
     modifier onlyAsleep() {
         assembly {
             if and(sload(isAwake.slot), 1) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 12)
                 mstore(0x44, 'It Has Woken')
@@ -996,19 +930,19 @@ contract DoomCultSocietyDAO is ERC20 {
     }
 
     constructor() ERC20() {
-        doomCult = new DoomCultSociety();
+        doomCultSociety = new DoomCultSociety();
         assembly {
             sstore(sleepTimer.slot, add(timestamp(), mul(4, SECONDS_PER_WEEK)))
         }
         // All cultists are equal... but some are more equal than others. Hon hon hon.
-        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 300;
-        _totalSupply = 300;
+        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 800;
+        _totalSupply = 800;
     }
 
     function attractCultists() public onlyAsleep {
         assembly {
             if lt(NUM_STARTING_CULTISTS, add(1, sload(_totalSupply.slot))) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 22)
                 mstore(0x44, 'No remaining cultists!')
@@ -1035,7 +969,7 @@ contract DoomCultSocietyDAO is ERC20 {
                     gt(add(timestamp(), 1), sload(sleepTimer.slot))
                 )
             ) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 17)
                 mstore(0x44, 'Still Sleeping...')
@@ -1054,7 +988,7 @@ contract DoomCultSocietyDAO is ERC20 {
     function obliterate() internal onlyAwake {
         assembly {
             if iszero(eq(sload(doomCounter.slot), add(WEEKS_UNTIL_OBLIVION, 1))) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 22)
                 mstore(0x44, 'Too Soon To Obliterate')
@@ -1076,7 +1010,7 @@ contract DoomCultSocietyDAO is ERC20 {
             let slot := keccak256(0x00, 0x40)
             let userBal := sload(slot)
             if iszero(userBal) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 21)
                 mstore(0x44, 'Insufficient Cultists')
@@ -1087,7 +1021,7 @@ contract DoomCultSocietyDAO is ERC20 {
             remainingCultists := sub(sload(_totalSupply.slot), 1)
             sstore(_totalSupply.slot, remainingCultists)
         }
-        doomCult.mint(doomCounter, remainingCultists, msg.sender);
+        doomCultSociety.mint(doomCounter, remainingCultists, msg.sender);
         assembly {
             // emit Transfer(msg.sender, 0, 1)
             mstore(0x00, 1)
@@ -1098,7 +1032,7 @@ contract DoomCultSocietyDAO is ERC20 {
     function worship() public payable onlyAwake {
         assembly {
             if gt(sload(timestampUntilNextEpoch.slot), add(timestamp(), 1)) {
-                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 8)
                 mstore(0x44, 'Too Soon')
@@ -1131,16 +1065,25 @@ contract DoomCultSocietyDAO is ERC20 {
     }
 }
 
+/**
+ * @dev DoomCultSociety
+ * It's more than a cult, it's a society!
+ * We have culture, economic theories and heaps of dead cultists
+ */
 contract DoomCultSociety is ERC721Enumerable {
-    address doomCultSocietyDAO;
-    uint256 numberOfDoomCultists;
-    uint256 private constant _NOT_ENTERED = 1;
-    uint256 private constant _ENTERED = 2;
-    uint256 private _status;
+    uint256 private doomCultSocietyDAOAndMutex; // an address and a bool smooshed together
 
     constructor() ERC721Enumerable() {
-        doomCultSocietyDAO = msg.sender;
-        _status = _NOT_ENTERED;
+        assembly {
+            sstore(doomCultSocietyDAOAndMutex.slot, caller())
+        }
+    }
+
+    function doomCultSocietyDAO() public view returns (address res) {
+        assembly {
+            let smooshed := sload(doomCultSocietyDAOAndMutex.slot)
+            res := and(smooshed, sub(shl(160, 1), 1))
+        }
     }
 
     function mint(
@@ -1148,13 +1091,51 @@ contract DoomCultSociety is ERC721Enumerable {
         uint256 remainingCultists,
         address owner
     ) public {
-        require(_status != _ENTERED, 'ReentrancyGuard: reentrant call');
-        _status = _ENTERED;
-        uint256 tokenId = (remainingCultists * 100000000) + (countdown * 1000000) + numberOfDoomCultists;
-        require(msg.sender == doomCultSocietyDAO, 'Only the Doom Cult Society DAO can mint');
-        _mint(owner, tokenId);
-        numberOfDoomCultists += 1;
-        _status = _NOT_ENTERED;
+        uint256 tokenId;
+        uint256 smooshed;
+        assembly {
+            smooshed := sload(doomCultSocietyDAOAndMutex.slot)
+            let doomCultSocietyDAOAddr := and(smooshed, sub(shl(160, 1), 1))
+            let mutex := shr(160, smooshed)
+
+            //if or(mutex, sub(caller(), doomCultSocietyDAOAddr)) {
+            if iszero(eq(caller(), doomCultSocietyDAOAddr)) {
+                mstore(0x00, ERROR_SIG)
+                mstore(0x04, 0x20)
+                mstore(0x24, 10)
+                mstore(0x44, 'Bad Caller')
+                revert(0x00, 0x64)
+            }
+
+            tokenId := add(add(mul(remainingCultists, 100000000), mul(countdown, 1000000)), sload(_allTokens.slot))
+        }
+
+        _beforeTokenTransfer(address(0), owner, tokenId);
+        bool isContract;
+        assembly {
+            mstore(0x00, owner)
+            mstore(0x20, _balances.slot)
+            let slot := keccak256(0x00, 0x40)
+            // no need to check overflow, there are only 30,000 tokens!
+            sstore(slot, add(sload(slot), 1))
+
+            mstore(0x00, tokenId)
+            mstore(0x20, _owners.slot)
+            sstore(keccak256(0x00, 0x40), owner)
+
+            mstore(0x00, tokenId)
+            log3(0x00, 0x20, TRANSFER_SIG, 0, owner)
+
+            sstore(doomCultSocietyDAOAndMutex.slot, or(smooshed, shl(160, 1)))
+
+            isContract := gt(extcodesize(owner), 0)
+        }
+        if (isContract) {
+            _checkOnERC721ReceivedContract(address(0), owner, tokenId, '');
+        }
+        assembly {
+            sstore(doomCultSocietyDAOAndMutex.slot, and(sub(shl(160, 1), 1), smooshed))
+        }
     }
 
     function getImgData(uint256 tokenId) internal pure returns (string memory res) {
@@ -1167,7 +1148,9 @@ contract DoomCultSociety is ERC721Enumerable {
             mstore(0x00, tokenId)
             mstore(0x20, 5148293888310004) // some salt for your token
             let seed := keccak256(0x00, 0x40)
-            let p := add(mload(0x40), 0x400)
+            let table1 := mload(0x40)
+            let table2 := add(0x300, table1)
+            let p := add(0x300, table2)
             res := sub(p, 0x20)
             mstore(add(p, 0x00), 0x3c73766720786d6c6e733d27687474703a2f2f7777772e77332e6f72672f3230)
             mstore(add(p, 0x20), 0x30302f7376672720786d6c6e733a786c696e6b3d27687474703a2f2f7777772e)
@@ -1560,26 +1543,11 @@ contract DoomCultSociety is ERC721Enumerable {
 
             mstore8(p, eye1) // "1" or "2"
             mstore(add(p, 1), "' style='fill:#")
-            let color1
-            let color2
-            switch and(seed, 1)
-            case 1 {
-                color1 := '9addf0'
-            }
-            case 0 {
-                color1 := 'ed1c24'
-            }
+            mstore(0x00, 'ed1c24')
+            mstore(0x20, '9addf0')
+            mstore(add(p, 16), mload(shl(5, and(seed, 1))))
             seed := shr(1, seed)
-            switch and(seed, 1)
-            case 1 {
-                color2 := '9addf0'
-            }
-            case 0 {
-                color2 := 'ed1c24'
-            }
-            mstore(add(p, 16), color1)
 
-            seed := shr(16, seed)
             p := add(p, 22)
 
             mstore(p, "'/><use xlink:href='#half'/><g t")
@@ -1589,7 +1557,7 @@ contract DoomCultSociety is ERC721Enumerable {
             p := add(p, 89)
             mstore8(p, eye2) // "1" or "2"
             mstore(add(p, 1), "' style='fill:#")
-            mstore(add(p, 16), color2)
+            mstore(add(p, 16), mload(shl(5, and(seed, 1))))
             seed := shr(16, seed)
 
             p := add(p, 22)
@@ -1618,6 +1586,7 @@ contract DoomCultSociety is ERC721Enumerable {
 
             {
                 let livingCultists := div(tokenId, 100000000) // 100 million
+                let oneCultist := eq(livingCultists, 1)
                 switch eq(livingCultists, 0)
                 case 1 {
                     mstore8(p, 0x30)
@@ -1644,290 +1613,244 @@ contract DoomCultSociety is ERC721Enumerable {
                     }
                     p := add(p, len)
                 }
-            }
 
-            mstore(p, ' Cultists Remaining')
-            p := add(p, 19)
+                mstore(p, ' Cultist')
+                mstore(add(p, 8), mul(iszero(oneCultist), 's'))
+                p := add(p, iszero(oneCultist))
+                mstore(add(p, 8), ' Remaining')
+                p := add(p, 18)
+            }
             mstore(p, "</text><text x='350' y='730' cla")
             mstore(add(p, 32), "ss='superheavy' text-anchor='mid")
             mstore(add(p, 64), "dle'>")
             p := add(p, 69)
 
-            switch iszero(mod(seed, 10))
-            case 1 {
-                seed := shr(8, seed)
-                switch mod(seed, 8)
-                case 0 {
-                    mstore(p, 'Willingly ')
-                    p := add(p, 10)
-                }
-                case 1 {
-                    mstore(p, 'Enthusiastically ')
-                    p := add(p, 17)
-                }
-                case 2 {
-                    mstore(p, 'Cravenly ')
-                    p := add(p, 9)
-                }
-                case 3 {
-                    mstore(p, 'Gratefully ')
-                    p := add(p, 11)
-                }
-                case 4 {
-                    mstore(p, 'Vicariously ')
-                    p := add(p, 12)
-                }
-                case 5 {
-                    mstore(p, 'Shockingly ')
-                    p := add(p, 11)
-                }
-                case 6 {
-                    mstore(p, 'Gruesomely ')
-                    p := add(p, 11)
-                }
-                case 7 {
-                    mstore(p, 'Confusingly ')
-                    p := add(p, 12)
-                }
-                seed := shr(8, seed)
-            }
-            case 0 {
-                seed := shr(16, seed)
-            }
+            mstore(table1, 0)
+            mstore(add(table1, 0x20), 'Willingly ')
+            mstore(add(table1, 0x40), 'Enthusiastically ')
+            mstore(add(table1, 0x60), 'Cravenly ')
+            mstore(add(table1, 0x80), 'Gratefully ')
+            mstore(add(table1, 0xa0), 'Vicariously ')
+            mstore(add(table1, 0xc0), 'Shockingly ')
+            mstore(add(table1, 0xe0), 'Gruesomly ')
+            mstore(add(table1, 0x100), 'Confusingly ')
 
-            switch mod(seed, 8)
-            case 0 {
-                mstore(p, 'Obliterated By')
-                p := add(p, 14)
-            }
-            case 1 {
-                mstore(p, 'Extinguished By')
-                p := add(p, 15)
-            }
-            case 2 {
-                mstore(p, 'Sacrificed In The Service Of')
-                p := add(p, 28)
-            }
-            case 3 {
-                mstore(p, 'Devoured By')
-                p := add(p, 11)
-            }
-            case 4 {
-                mstore(p, 'Ripped Apart By')
-                p := add(p, 15)
-            }
-            case 5 {
-                mstore(p, 'Erased From Existence By')
-                p := add(p, 24)
-            }
-            case 6 {
-                mstore(p, 'Vivisected Via')
-                p := add(p, 14)
-            }
-            case 7 {
-                mstore(p, 'Banished To The Void Using')
-                p := add(p, 25)
-            }
+            mstore(table2, 0)
+            mstore(add(table2, 0x20), 10)
+            mstore(add(table2, 0x40), 17)
+            mstore(add(table2, 0x60), 9)
+            mstore(add(table2, 0x80), 11)
+            mstore(add(table2, 0xa0), 12)
+            mstore(add(table2, 0xc0), 11)
+            mstore(add(table2, 0xe0), 11)
+            mstore(add(table2, 0x100), 12)
+
+            let idx := mul(iszero(mod(seed, 10)), add(0x20, shl(5, mod(shr(8, seed), 8))))
+            mstore(p, mload(add(table1, idx)))
+            p := add(p, mload(add(table2, idx)))
             seed := shr(16, seed)
+
+            mstore(add(table1, 0x20), 'Obliterated By')
+            mstore(add(table1, 0x40), 'Extinguished By')
+            mstore(add(table1, 0x60), 'Sacrificed In The Service Of')
+            mstore(add(table1, 0x80), 'Devoured By')
+            mstore(add(table1, 0xa0), 'Ripped Apart By')
+            mstore(add(table1, 0xc0), 'Erased From Existence By')
+            mstore(add(table1, 0xe0), 'Vivisected Via')
+            mstore(add(table1, 0x100), 'Banished To The Void Using')
+
+            mstore(add(table2, 0x20), 14)
+            mstore(add(table2, 0x40), 15)
+            mstore(add(table2, 0x60), 28)
+            mstore(add(table2, 0x80), 11)
+            mstore(add(table2, 0xa0), 15)
+            mstore(add(table2, 0xc0), 24)
+            mstore(add(table2, 0xe0), 14)
+            mstore(add(table2, 0x100), 26)
+
+            idx := add(0x20, shl(5, mod(seed, 8)))
+            mstore(p, mload(add(table1, idx)))
+            p := add(p, mload(add(table2, idx)))
+            seed := shr(8, seed)
+
             mstore(p, "</text><text x='350' y='780' cla")
             mstore(add(p, 32), "ss='superheavy' text-anchor='mid")
             mstore(add(p, 64), "dle'>")
-
             p := add(p, 69)
-            switch eq(mod(seed, 100), 0)
-            case 1 {
-                // It's a one in a million shot Doc... ok 1 in 100
-                mstore(p, 'The Communist Manifesto')
-                p := add(p, 23)
-            }
-            case 0 {
-                switch mod(seed, 10)
-                case 0 {
-                    mstore(p, 'Extreme ')
-                    p := add(p, 8)
-                }
-                case 1 {
-                    mstore(p, 'Voracious ')
-                    p := add(p, 10)
-                }
-                case 2 {
-                    mstore(p, 'Hysterical ')
-                    p := add(p, 11)
-                }
-                case 3 {
-                    mstore(p, 'Politically Indiscreet ')
-                    p := add(p, 23)
-                }
-                case 4 {
-                    mstore(p, 'Energetic ')
-                    p := add(p, 10)
-                }
-                case 5 {
-                    mstore(p, 'Ferocious ')
-                    p := add(p, 10)
-                }
-                case 6 {
-                    mstore(p, 'Lazy ')
-                    p := add(p, 5)
-                }
-                case 7 {
-                    mstore(p, 'Volcanic ')
-                    p := add(p, 9)
-                }
-                case 8 {
-                    mstore(p, 'Grossly Incompetent ')
-                    p := add(p, 20)
-                }
-                case 9 {
-                    mstore(p, 'Unrefined ')
-                    p := add(p, 10)
-                }
 
-                seed := shr(16, seed)
-                switch mod(seed, 15)
-                case 0 {
-                    mstore(p, 'Curiosity')
-                    p := add(p, 9)
-                }
-                case 1 {
-                    mstore(p, 'Canadians')
-                    p := add(p, 9)
-                }
-                case 2 {
-                    mstore(p, 'Ennui')
-                    p := add(p, 5)
-                }
-                case 3 {
-                    mstore(p, 'Gluttony')
-                    p := add(p, 8)
-                }
-                case 4 {
-                    mstore(p, 'Ballroom Dancing Fever')
-                    p := add(p, 22)
-                }
-                case 5 {
-                    mstore(p, 'Heavy Metal')
-                    p := add(p, 11)
-                }
-                case 6 {
-                    mstore(p, 'Physics')
-                    p := add(p, 7)
-                }
-                case 7 {
-                    mstore(p, 'Memes')
-                    p := add(p, 5)
-                }
-                case 8 {
-                    mstore(p, 'Foolishness')
-                    p := add(p, 11)
-                }
-                case 9 {
-                    mstore(p, 'Saxophonists')
-                    p := add(p, 12)
-                }
-                case 10 {
-                    mstore(p, 'FOMO')
-                    p := add(p, 4)
-                }
-                case 11 {
-                    mstore(p, 'Velociraptors')
-                    p := add(p, 13)
-                }
-                case 12 {
-                    mstore(p, 'Theatre Critics')
-                    p := add(p, 15)
-                }
-                case 13 {
-                    mstore(p, 'Lawyers')
-                    p := add(p, 7)
-                }
-                case 14 {
-                    mstore(p, 'Explosions')
-                    p := add(p, 10)
-                }
-                case 15 {
-                    mstore(p, 'Gigawatt Lasers')
-                    p := add(p, 15)
-                }
-            }
+            mstore(add(table1, 0x20), 'Extreme ')
+            mstore(add(table1, 0x40), 'Voracious ')
+            mstore(add(table1, 0x60), 'Hysterical ')
+            mstore(add(table1, 0x80), 'Politically Indiscreet ')
+            mstore(add(table1, 0xa0), 'Energetic ')
+            mstore(add(table1, 0xc0), 'Ferocious ')
+            mstore(add(table1, 0xe0), 'Lazy ')
+            mstore(add(table1, 0x100), 'Volcanic ')
+            mstore(add(table1, 0x120), 'Grossly Incompetent ')
+            mstore(add(table1, 0x140), 'Unrefined ')
+
+            mstore(add(table2, 0x20), 8)
+            mstore(add(table2, 0x40), 10)
+            mstore(add(table2, 0x60), 11)
+            mstore(add(table2, 0x80), 23)
+            mstore(add(table2, 0xa0), 10)
+            mstore(add(table2, 0xc0), 10)
+            mstore(add(table2, 0xe0), 5)
+            mstore(add(table2, 0x100), 9)
+            mstore(add(table2, 0x120), 20)
+            mstore(add(table2, 0x140), 10)
+
+            let rare := eq(mod(seed, 100), 0)
+
+            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 10))))
+            mstore(p, mload(add(table1, idx)))
+            p := add(p, mload(add(table2, idx)))
+            seed := shr(16, seed)
+
+            mstore(table1, 'The Communist Manifesto')
+            mstore(add(table1, 0x20), 'Curiosity')
+            mstore(add(table1, 0x40), 'Canadians')
+            mstore(add(table1, 0x60), 'Ennui')
+            mstore(add(table1, 0x80), 'Gluttony')
+            mstore(add(table1, 0xa0), 'Ballroom Dancing Fever')
+            mstore(add(table1, 0xc0), 'Heavy Metal')
+            mstore(add(table1, 0xe0), 'Physics')
+            mstore(add(table1, 0x100), 'Memes')
+            mstore(add(table1, 0x120), 'Foolishness')
+            mstore(add(table1, 0x140), 'Saxophonists')
+            mstore(add(table1, 0x160), 'FOMO')
+            mstore(add(table1, 0x180), 'Velociraptors')
+            mstore(add(table1, 0x1a0), 'Theatre Critics')
+            mstore(add(table1, 0x1c0), 'Lawyers')
+            mstore(add(table1, 0x1e0), 'Explosions')
+            mstore(add(table1, 0x200), 'Gigawatt Lasers')
+
+            mstore(table2, 23)
+            mstore(add(table2, 0x20), 9)
+            mstore(add(table2, 0x40), 9)
+            mstore(add(table2, 0x60), 5)
+            mstore(add(table2, 0x80), 8)
+            mstore(add(table2, 0xa0), 22)
+            mstore(add(table2, 0xc0), 11)
+            mstore(add(table2, 0xe0), 7)
+            mstore(add(table2, 0x100), 5)
+            mstore(add(table2, 0x120), 11)
+            mstore(add(table2, 0x140), 12)
+            mstore(add(table2, 0x160), 4)
+            mstore(add(table2, 0x180), 13)
+            mstore(add(table2, 0x1a0), 15)
+            mstore(add(table2, 0x1c0), 7)
+            mstore(add(table2, 0x1e0), 10)
+            mstore(add(table2, 0x200), 15)
+
+            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 16))))
+            mstore(p, mload(add(table1, idx)))
+            p := add(p, mload(add(table2, idx)))
+
             mstore(p, '</text></svg>')
             p := add(p, 13)
 
             mstore(res, sub(sub(p, res), 0x20))
-            mstore(0x40, p)
+            mstore(0x40, add(p, 0xf0))
         }
     }
 
     function tokenURI(uint256 tokenId) public pure override returns (string memory) {
-        string memory img = getImgData(tokenId);
-        return
-            Base64.encode(
-                bytes(
-                    string(
-                        abi.encodePacked(
-                            '{"name": "Cultist #',
-                            toString(tokenId % 1000000),
-                            '", "description": "Doom Cult Society is an interactive cult simulator. Acquire and sacrifice cultists to hasten the end of the world.", "image": "data:image/svg+xml;base64,',
-                            Base64.encode(bytes(img)),
-                            '"}'
-                        )
-                    )
-                )
-            );
+        // 191 + length of tokenId
+        uint256 strLen;
+        uint256 tokenLen;
+        uint256 id;
+        assembly {
+            id := mod(tokenId, 1000000)
+            let x := id
+            for {
+
+            } x {
+
+            } {
+                tokenLen := add(tokenLen, 1)
+                x := div(x, 10)
+            }
+            strLen := add(tokenLen, 191)
+        }
+        string memory innerData = Base64.encode(getImgData(tokenId), strLen, 2);
+        assembly {
+            let ptr := add(innerData, 0x20)
+            mstore(ptr, '{"name": "Cultist #')
+            ptr := add(ptr, 19)
+            switch iszero(id)
+            case 1 {
+                mstore8(ptr, 0x30)
+                ptr := add(ptr, 1)
+            }
+            case 0 {
+                let i := tokenLen
+                for {
+
+                } id {
+
+                } {
+                    i := sub(i, 1)
+                    mstore8(add(ptr, tokenLen), add(mod(id, 10), 0x30))
+                    id := div(id, 10)
+                }
+                ptr := add(ptr, tokenLen)
+            }
+            mstore(ptr, '", "description": "Doom Cult Soc')
+            mstore(add(ptr, 0x20), 'iety is an interactive cult simu')
+            mstore(add(ptr, 0x40), 'lator. Acquire and sacrifice cul')
+            mstore(add(ptr, 0x60), 'tists to hasten the end of the w')
+            mstore(add(ptr, 0x80), 'orld.", "image": "data:image/svg')
+            mstore(add(ptr, 0xa0), or('+xml;base64,', mload(add(ptr, 0xa0))))
+
+            mstore(innerData, add(mload(innerData), strLen))
+
+            ptr := add(innerData, add(0x20, mload(innerData)))
+            mstore(ptr, '"}')
+            mstore(innerData, add(mload(innerData), 2))
+        }
+        return Base64.encode(innerData, 0, 0);
     }
 
     function imageURI(uint256 tokenId) public pure returns (string memory) {
-        string memory img = getImgData(tokenId);
-        return string(abi.encodePacked('data:image/svg+xml;base64,', Base64.encode(bytes(img))));
-    }
-
-    function toString(uint256 value) internal pure returns (string memory) {
-        // Inspired by OraclizeAPI's implementation - MIT license
-        // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
-
-        if (value == 0) {
-            return '0';
+        string memory result = Base64.encode(getImgData(tokenId), 26, 0);
+        assembly {
+            let ptr := add(result, 0x20)
+            mstore(ptr, or('data:image/svg+xml;base64,', mload(ptr)))
+            mstore(result, add(mload(result), 26))
         }
-        uint256 temp = value;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-        bytes memory buffer = new bytes(digits);
-        while (value != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
-            value /= 10;
-        }
-        return string(buffer);
+        return result;
     }
 }
 
 /// [MIT License]
 /// @title Base64
 /// @notice Provides a function for encoding some bytes in base64
-/// @author Brecht Devos <brecht@loopring.org>
+/// @author Original author Brecht Devos <brecht@loopring.org>
+/// @notice alterations have been made to this code
 library Base64 {
-    bytes internal constant TABLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
     /// @notice Encodes some bytes to the base64 representation
-    function encode(bytes memory data) internal pure returns (string memory) {
-        uint256 len = data.length;
-        if (len == 0) return '';
-
-        // multiply by 4/3 rounded up
-        uint256 encodedLen = 4 * ((len + 2) / 3);
-
-        // Add some extra buffer at the end
-        bytes memory result = new bytes(encodedLen + 32);
-
-        bytes memory table = TABLE;
-
+    // bytesBefore = prepend this many bytes to the output string
+    // bytesAfter = append this many bytes to the output string
+    function encode(
+        string memory data,
+        uint256 bytesBefore,
+        uint256 bytesAfter
+    ) internal pure returns (string memory result) {
         assembly {
-            let tablePtr := add(table, 1)
-            let resultPtr := add(result, 32)
+            // ignore case where len = 0, shoudln't' happen with this contract
+            let len := mload(data)
+            // multiply by 4/3 rounded up
+            let encodedLen := shl(2, div(add(len, 2), 3))
 
+            // Add some extra buffer at the end
+            result := mload(0x40)
+            mstore(0x40, add(encodedLen, add(0x20, add(bytesBefore, bytesAfter))))
+
+            let tablePtr := mload(0x40)
+            mstore(add(tablePtr, 0x1f), 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef')
+            mstore(add(tablePtr, 0x3f), 'ghijklmnopqrstuvwxyz0123456789+/')
+            let resultPtr := add(result, add(32, bytesBefore))
             for {
                 let i := 0
             } lt(i, len) {
@@ -1946,7 +1869,6 @@ library Base64 {
                 out := shl(224, out)
 
                 mstore(resultPtr, out)
-
                 resultPtr := add(resultPtr, 4)
             }
 
@@ -1957,10 +1879,7 @@ library Base64 {
             case 2 {
                 mstore(sub(resultPtr, 1), shl(248, 0x3d))
             }
-
             mstore(result, encodedLen)
         }
-
-        return string(result);
     }
 }

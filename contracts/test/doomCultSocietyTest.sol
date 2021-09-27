@@ -2,6 +2,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import {DoomCultSocietyDAO} from '../doomCultSociety.sol';
+import {DoomCultSociety} from '../doomCultSociety.sol';
 
 contract DoomCultSocietyDAOTest is DoomCultSocietyDAO {
     constructor() DoomCultSocietyDAO() {}
@@ -21,5 +22,13 @@ contract DoomCultSocietyDAOTest is DoomCultSocietyDAO {
 
     function forceLargeSacrifice(uint256 num) public {
         currentEpochTotalSacrificed += num;
+    }
+}
+
+contract DoomCultSocietyTest is DoomCultSociety {
+    constructor() DoomCultSociety() {}
+
+    function getImgString(uint256 tokenId) public pure returns (string memory) {
+        return getImgData(tokenId);
     }
 }

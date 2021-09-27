@@ -12,7 +12,7 @@
 > 2. Sacrifice cultists to placate the wrath of the Doom Cult Society DAO
 > 3. Survive for as long as possible
 
-Doom Cult Society has two phases:
+Wnat to know more? Doom Cult Society has two phases:
 
 ***
 
@@ -46,9 +46,15 @@ The Doom Cult Society is designed to be played using the Doom Cult Society DAO c
 * **Doom Cult Society DAO Contract** (attract/sacrifice cultists): `0xfff`  
 * **Doom Cult Society NFT Contract** (view/trade/lovingly embrace dead cultist NFTs): `0xfff`
 
-**Attract Cultists**: `attractCultists()` : will give the user 3 CUL tokens until all 30,000 CUL have been distributed
-**Sacrifice Cultists**: `sacrificeCultist()` : will destroy 1 CUL and mint a Doom Cult Society NFT in exchange
-**Worship the DAO**: `worship()` : if 1 week has passed since the last `worship()`, the `doomCounter` is advanced 1 week. If `doomCounter > 52`, the DAO is **obliterated**
+**Attract Cultists**: `attractCultists()` : will give the user 3 CUL tokens until all 30,000 CUL have been distributed  
+**Sacrifice Cultists**: `sacrificeCultist()` : will destroy 1 CUL and mint a Doom Cult Society NFT in exchange  
+**Worship the DAO**: `worship()` : if 1 week has passed since the last `worship()`, the `doomCounter` is advanced 1 week. If `doomCounter > 52`, the DAO is **obliterated**. If the current week's total sacrificed is less than the previous week, the DAO is **obliterated**  
+**Stats**: `currentEpochTotalSacrificed()`, `lastEpochTotalSacrificed()`, `timestampUntilNextEpoch()` (UNIX timestamp that describes when the DAO can be worshipped)
+
+# View NFTs
+
+The Doom Cult Society NFTs have their image data directly embedded into their tokenURI.  
+To view the image directly call `imageURI(tokenId)` on Etherscan and paste the output string into your browser!
 
 ***
 
@@ -75,7 +81,7 @@ In addition, each token describes the highly plausible manner in which your cult
 
 **Pros**
 1. Meet like-minded individuals and trade tips on how to survive the comping apocalypse.
-2. CUL tokens is backed by divine economics: religious fervor drives community engagement!
+2. CUL tokens are backed by divine economics: religious fervor drives community engagement!
 
 **Cons**
 1. Slight risk of being sucked into an apocalyptic death cult
@@ -94,7 +100,7 @@ Due to the completely backwards economics of the Doom Cult Society, there is an 
 This destroys all CUL tokens.  
 Even if the community somehow manages to keep the DAO going, the contract autodestructs after 52 weeks.  
 
-TLDR: Probably shouldn't take investment advice from text written by a stranger and posted to a webpage literally titled "Doom Cult Society".
+(Not investment advice. If you're taking advice from text written by a stranger and posted to a webpage literally titled "Doom Cult Society", you should probably put down the blockchain and go outside for a bit...)
 
 ### Is there a Discord?
 
@@ -102,4 +108,4 @@ There is no Discord, Slack, Whatsapp, Twitter or Tinder. Only Github.
 
 ### Is Doom Cult Society audited?
 
-It's not that kind of crypto project. More of a "threw together over a weekend" kind of project. Use at your own risk.
+It's not that kind of crypto project . More of a "threw together over a weekend" kind of deal. Use at your own risk.

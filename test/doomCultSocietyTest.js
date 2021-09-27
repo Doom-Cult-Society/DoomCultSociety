@@ -3,11 +3,20 @@ const { ethers } = require("hardhat");
 
 describe("DoomCultSociety", function () {
 
+  async function getDoomCultSociety(doomCultDAO) {
+    const DoomCultSociety = await ethers.getContractFactory("DoomCultSociety");
+    const doomCultSocietyAddr = await doomCultDAO.doomCultSociety();
+    const doomCultSociety = await DoomCultSociety.attach(doomCultSocietyAddr);
+    return doomCultSociety;
+  }
+
   it("testAttractCultists", async function () {
     const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
-    await doomCultDAO.deployed();
 
+    const res = await doomCultDAO.deployed();
+    const receipt = await res.deployTransaction.wait();
+    console.log('deploy cost: ', receipt.gasUsed.toNumber());
     const [owner] = await ethers.getSigners();
     const oldBalance = (await doomCultDAO.balanceOf(owner.address)).toNumber();
     await expect(oldBalance).to.equal(0);
@@ -103,5 +112,146 @@ describe("DoomCultSociety", function () {
   
     // Test contract is destroyed by calling getter fn
     await expect(doomCultDAO.doomCounter()).to.be.reverted;
+  });
+
+  it("test sacrifice/mint", async function() {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+    const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
+    await doomCultDAO.deployed();
+
+    await doomCultDAO.forceMaximumCultists();
+    await doomCultDAO.wakeUp();
+
+    expect(await doomCultDAO.doomCounter()).to.equal(1);
+    expect((await doomCultDAO.totalSupply()).toNumber()).to.equal(30000);
+
+    await expect(doomCultDAO.worship()).to.be.reverted;
+
+    const tx = await (await doomCultDAO.sacrifice()).wait();
+    const nftId = tx.logs[0].data;
+    const doomCultSociety = await getDoomCultSociety(doomCultDAO);
+    const ownerOf = await doomCultSociety.ownerOf(nftId);
+    const [owner, addr1, addr2] = await ethers.getSigners();
+
+    expect(ownerOf).to.equal(owner.address);
+
+    await doomCultSociety.approve(addr1.address, nftId);
+
+    expect(await doomCultSociety.getApproved(nftId)).to.equal(addr1.address);
+
+    await expect(doomCultSociety.connect(addr1).transferFrom(addr1.address, addr2.address, nftId)).to.be.reverted;
+
+    await doomCultSociety.connect(addr1).transferFrom(owner.address, addr2.address, nftId);
+
+    expect(await doomCultSociety.ownerOf(nftId)).to.equal(addr2.address);
+
+    await expect(doomCultSociety.connect(addr1).transferFrom(addr1.address, owner.address, nftId)).to.be.reverted;
+
+    await doomCultSociety.connect(addr2).transferFrom(addr2.address, owner.address, nftId);
+
+    expect(await doomCultSociety.ownerOf(nftId)).to.equal(owner.address);
+
+    const daoAddr = await doomCultSociety.doomCultSocietyDAO();
+    expect(daoAddr).to.equal(doomCultDAO.address);
+  });
+
+  it("test cannot directly mint", async function() {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+    const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
+    await doomCultDAO.deployed();
+
+    await doomCultDAO.forceMaximumCultists();
+    await doomCultDAO.wakeUp();
+
+    await expect(doomCultDAO.worship()).to.be.reverted;
+
+    const tx = await (await doomCultDAO.sacrifice()).wait();
+    const nftId = tx.logs[0].data;
+
+    const doomCultSociety = await getDoomCultSociety(doomCultDAO);
+
+    await expect(doomCultSociety.mint(1)).to.be.reverted;
+  });
+
+  
+  it("test gonzo phrases", async function() {
+    const DoomCultSociety = await ethers.getContractFactory("DoomCultSocietyTest");
+    const doomCult = await DoomCultSociety.deploy({ gasLimit: 10000000 });
+    await doomCult.deployed();
+
+    let test = true;
+    let count = 0;
+    let strings = [
+      'Obliterated By',
+      'Extinguished By',
+      'Sacrificed In The Service Of',
+      'Devoured By',
+      'Ripped Apart By',
+      'Erased From Existence By',
+      'Vivisected Via',
+      'Banished To The Void Using',
+      'Willingly ',
+      'Enthusiastically ',
+      'Cravenly ',
+      'Gratefully ',
+      'Vicariously ',
+      'Shockingly ',
+      'Gruesomly ',
+      'Confusingly ',
+      'Extreme ',
+      'Voracious ',
+      'Hysterical ',
+      'Politically Indiscreet ',
+      'Energetic ',
+      'Ferocious ',
+      'Lazy ',
+      'Volcanic ',
+      'Grossly Incompetent ',
+      'Unrefined ',
+      'The Communist Manifesto',
+      'Curiosity',
+      'Canadians',
+      'Ennui',
+      'Gluttony',
+      'Ballroom Dancing Fever',
+      'Heavy Metal',
+      'Physics',
+      'Memes',
+      'Foolishness',
+      'Saxophonists',
+      'FOMO',
+      'Velociraptors',
+      'Theatre Critics',
+      'Lawyers',
+      'Explosions',
+      'Gigawatt Lasers',
+      'The Communist Manifesto',
+      'Week: 0',
+      'Week: 1',
+      'Week: 52',
+      '0 Cultists Remaining',
+      '1 Cultist Remaining',
+      '2 Cultists Remaining',
+      '#decorative1',
+      '#decorative2',
+      '#decorative3',
+      '#decorative4',
+      '#decorative5',
+      '#decorative6',
+      '#decorative7',
+      '#decorative8',
+      '#decorative0',
+    ];
+
+    let seed = 0;
+    while(strings.length > 0 && (count < 500))
+    {
+
+      const uri = await doomCult.getImgString(seed);
+      strings = strings.filter(x => !uri.includes(x));
+      count += 1;
+      seed += 101000001
+    }
+    expect(strings.length).to.equal(0);
   });
 });
