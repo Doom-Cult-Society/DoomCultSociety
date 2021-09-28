@@ -3,8 +3,6 @@ pragma solidity >=0.7.0 <0.9.0;
 
 /**
  * @dev ERC20 Contract Implementation
- *
- * Some parts written in Yul to reduce code size
  */
 contract ERC20 {
     mapping(address => uint256) internal _balances;
@@ -342,8 +340,6 @@ interface IERC721Metadata is IERC721 {
 /**
  * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
  * the Metadata extension but not the Enumerable extension
- *
- * Some parts written in Yul to reduce code
  */
 contract ERC721 is IERC165, IERC721, IERC721Metadata {
     // Token name
