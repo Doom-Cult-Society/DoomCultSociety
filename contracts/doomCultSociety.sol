@@ -1725,6 +1725,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table1, 0x240), 'Volcanic ')
             mstore(add(table1, 0x260), 'Voracious ')
             mstore(add(table1, 0x280), "Grandmother's Leftover ")
+            mstore(add(table1, 0x2a0), "M. Night Shyamalan's ")
 
             mstore(add(table2, 0x20), 19)
             mstore(add(table2, 0x40), 11)
@@ -1746,10 +1747,11 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table2, 0x240), 9)
             mstore(add(table2, 0x260), 10)
             mstore(add(table2, 0x280), 23)
+            mstore(add(table2, 0x2a0), 21)
 
             let rare := eq(mod(seed, 100), 0)
 
-            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 20))))
+            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 21))))
             mstore(p, mload(add(table1, idx)))
             p := add(p, mload(add(table2, idx)))
             seed := shr(16, seed)
