@@ -32,16 +32,17 @@ describe('DoomCultSociety', function () {
 
     await expect(doomCultDAO.transfer(addr1.address, 10)).to.be.reverted;
 
-    await doomCultDAO.approve(addr1.address, 1);
+    await doomCultDAO.approve(addr1.address, 2);
 
-    await expect(doomCultDAO.connect(addr1).transferFrom(addr2.address, addr1.address, 1)).to.be.reverted;
+    await expect(doomCultDAO.connect(addr2).transferFrom(owner.address, addr1.address, 1)).to.be.reverted;
     await expect(doomCultDAO.connect(addr1).transferFrom(addr1.address, addr1.address, 1)).to.be.reverted;
-    await expect(doomCultDAO.connect(addr1).transferFrom(owner.address, addr1.address, 2)).to.be.reverted;
+    await expect(doomCultDAO.connect(addr1).transferFrom(owner.address, addr1.address, 3)).to.be.reverted;
 
-    await doomCultDAO.connect(addr1).transferFrom(owner.address, addr1.address, 1);
+    await doomCultDAO.connect(addr1).transferFrom(owner.address, addr1.address, 2);
 
-    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(2);
-    expect((await doomCultDAO.balanceOf(owner.address)).toNumber()).to.equal(1);
+    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(3);
+    expect((await doomCultDAO.balanceOf(owner.address)).toNumber()).to.equal(0);
+    expect((await doomCultDAO.totalSupply()).toNumber()).to.equal(1203);
   });
 
   it('test awake', async function () {
@@ -99,6 +100,19 @@ describe('DoomCultSociety', function () {
     await expect(doomCultDAO.worship()).to.be.reverted;
 
     await doomCultDAO.sacrifice();
+
+    expect(await doomCultDAO.totalSupply()).to.equal(29999);
+    const [owner, addr1] = await ethers.getSigners();
+
+    await doomCultDAO.transfer(addr1.address, 2);
+
+    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(2);
+    await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(0)).to.be.reverted;
+    await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(3)).to.be.reverted;
+    await doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(2);
+
+    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(0);
+
     await doomCultDAO.forceAdvanceEpoch();
 
     await doomCultDAO.worship();

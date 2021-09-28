@@ -103,7 +103,7 @@ contract ERC20 {
             mstore(0x00, recipient)
             balancesSlot := keccak256(0x00, 0x40)
             // skip overflow check as we only have 30,000 tokens
-            sstore(balancesSlot, add(sload(balancesSlot), 1))
+            sstore(balancesSlot, add(sload(balancesSlot), amount))
             mstore(0x00, amount)
             log3(0x00, 0x20, TRANSFER_SIG, sender, recipient)
         }
@@ -861,7 +861,12 @@ contract DoomCultSocietyDAO is ERC20 {
         }
     }
 
-    function sacrifice() public onlyAwake {
+    /**
+     * N.B. This function will only generate ONE NFT regardless of how many you sacrifice!!!!!
+     *      If you want lots of NFTs call `sacrifice()` multiple times
+     *      This function is for those who just want to run those numbers up for maximum chaos
+     */
+    function sacrificeManyButOnlyMintOneNFT(uint256 num) public onlyAwake {
         uint256 remainingCultists;
         uint256 sacrificedCultists;
         assembly {
@@ -869,25 +874,29 @@ contract DoomCultSocietyDAO is ERC20 {
             mstore(0x20, _balances.slot)
             let slot := keccak256(0x00, 0x40)
             let userBal := sload(slot)
-            if iszero(userBal) {
+            if or(lt(userBal, num), iszero(num)) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 21)
                 mstore(0x44, 'Insufficient Cultists')
                 revert(0x00, 0x64)
             }
-            sstore(slot, sub(userBal, 1))
-            sstore(currentEpochTotalSacrificed.slot, add(sload(currentEpochTotalSacrificed.slot), 1))
-            remainingCultists := sub(sload(_totalSupply.slot), 1)
+            sstore(slot, sub(userBal, num))
+            sstore(currentEpochTotalSacrificed.slot, add(sload(currentEpochTotalSacrificed.slot), num))
+            remainingCultists := sub(sload(_totalSupply.slot), num)
             sstore(_totalSupply.slot, remainingCultists)
             sacrificedCultists := sub(sload(numStartingCultists.slot), remainingCultists)
         }
         doomCultSociety.mint(doomCounter, remainingCultists, sacrificedCultists, msg.sender);
         assembly {
-            // emit Transfer(msg.sender, 0, 1)
-            mstore(0x00, 1)
+            // emit Transfer(msg.sender, 0, num)
+            mstore(0x00, num)
             log3(0x00, 0x20, TRANSFER_SIG, caller(), 0)
         }
+    }
+
+    function sacrifice() public onlyAwake {
+        sacrificeManyButOnlyMintOneNFT(1);
     }
 
     function worship() public payable onlyAwake {
