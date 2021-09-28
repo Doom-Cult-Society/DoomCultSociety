@@ -1,23 +1,22 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+const { expect } = require('chai');
+const { ethers } = require('hardhat');
 
-describe("DoomCultSociety", function () {
-
+describe('DoomCultSociety', function () {
   async function getDoomCultSociety(doomCultDAO) {
-    const DoomCultSociety = await ethers.getContractFactory("DoomCultSociety");
+    const DoomCultSociety = await ethers.getContractFactory('DoomCultSociety');
     const doomCultSocietyAddr = await doomCultDAO.doomCultSociety();
     const doomCultSociety = await DoomCultSociety.attach(doomCultSocietyAddr);
     return doomCultSociety;
   }
 
-  it("testAttractCultists", async function () {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('testAttractCultists', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
 
     const res = await doomCultDAO.deployed();
     const receipt = await res.deployTransaction.wait();
     console.log('deploy cost: ', receipt.gasUsed.toNumber());
-    const [owner] = await ethers.getSigners();
+    const [owner, addr1, addr2] = await ethers.getSigners();
     const oldBalance = (await doomCultDAO.balanceOf(owner.address)).toNumber();
     await expect(oldBalance).to.equal(0);
     await doomCultDAO.attractCultists();
@@ -26,14 +25,31 @@ describe("DoomCultSociety", function () {
 
     await doomCultDAO.forceAwake();
     await expect(doomCultDAO.attractCultists()).to.be.reverted;
+
+    await doomCultDAO.transfer(addr1.address, 1);
+    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(1);
+    expect((await doomCultDAO.balanceOf(owner.address)).toNumber()).to.equal(2);
+
+    await expect(doomCultDAO.transfer(addr1.address, 10)).to.be.reverted;
+
+    await doomCultDAO.approve(addr1.address, 1);
+
+    await expect(doomCultDAO.connect(addr1).transferFrom(addr2.address, addr1.address, 1)).to.be.reverted;
+    await expect(doomCultDAO.connect(addr1).transferFrom(addr1.address, addr1.address, 1)).to.be.reverted;
+    await expect(doomCultDAO.connect(addr1).transferFrom(owner.address, addr1.address, 2)).to.be.reverted;
+
+    await doomCultDAO.connect(addr1).transferFrom(owner.address, addr1.address, 1);
+
+    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(2);
+    expect((await doomCultDAO.balanceOf(owner.address)).toNumber()).to.equal(1);
   });
 
-  it("test awake", async function() {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('test awake', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
     await doomCultDAO.deployed();
 
-    await expect(await (doomCultDAO.isAwake())).to.equal(false);
+    await expect(await doomCultDAO.isAwake()).to.equal(false);
 
     await doomCultDAO.forceMaximumCultists();
 
@@ -41,13 +57,13 @@ describe("DoomCultSociety", function () {
 
     await doomCultDAO.wakeUp();
 
-    await expect(await (doomCultDAO.isAwake())).to.equal(true);    
-    expect(await (doomCultDAO.doomCounter())).to.equal(BigInt(1));   
-    await expect(doomCultDAO.worship()).to.be.reverted;   
+    await expect(await doomCultDAO.isAwake()).to.equal(true);
+    expect(await doomCultDAO.doomCounter()).to.equal(BigInt(1));
+    await expect(doomCultDAO.worship()).to.be.reverted;
   });
 
-  it("test awake methods cannot be called when sleeping", async function() {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('test awake methods cannot be called when sleeping', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
     await doomCultDAO.deployed();
 
@@ -55,8 +71,8 @@ describe("DoomCultSociety", function () {
     await expect(doomCultDAO.sacrifice()).to.be.reverted;
   });
 
-  it("test insufficient sacrifices", async function() {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('test insufficient sacrifices', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
     await doomCultDAO.deployed();
 
@@ -72,9 +88,8 @@ describe("DoomCultSociety", function () {
     await expect(doomCultDAO.doomCounter()).to.be.reverted;
   });
 
-  
-  it("test worship", async function() {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('test worship', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
     await doomCultDAO.deployed();
 
@@ -91,16 +106,15 @@ describe("DoomCultSociety", function () {
     expect(await doomCultDAO.doomCounter()).to.equal(BigInt(2));
   });
 
-  it('test obliterate', async function() {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('test obliterate', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
     await doomCultDAO.deployed();
 
     await doomCultDAO.forceMaximumCultists();
     await doomCultDAO.wakeUp();
 
-    for (let i = 0; i < 51; ++i)
-    {
+    for (let i = 0; i < 51; ++i) {
       await doomCultDAO.forceLargeSacrifice(i + 1);
       await doomCultDAO.forceAdvanceEpoch();
       await doomCultDAO.worship();
@@ -109,13 +123,13 @@ describe("DoomCultSociety", function () {
     await doomCultDAO.forceLargeSacrifice(52);
     await doomCultDAO.forceAdvanceEpoch();
     await doomCultDAO.worship();
-  
+
     // Test contract is destroyed by calling getter fn
     await expect(doomCultDAO.doomCounter()).to.be.reverted;
   });
 
-  it("test sacrifice/mint", async function() {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('test sacrifice/mint', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
     await doomCultDAO.deployed();
 
@@ -128,6 +142,7 @@ describe("DoomCultSociety", function () {
     await expect(doomCultDAO.worship()).to.be.reverted;
 
     const tx = await (await doomCultDAO.sacrifice()).wait();
+    console.log('sacrifice cost: ', tx.gasUsed.toNumber());
     const nftId = tx.logs[0].data;
     const doomCultSociety = await getDoomCultSociety(doomCultDAO);
     const ownerOf = await doomCultSociety.ownerOf(nftId);
@@ -155,8 +170,8 @@ describe("DoomCultSociety", function () {
     expect(daoAddr).to.equal(doomCultDAO.address);
   });
 
-  it("test cannot directly mint", async function() {
-    const DoomCultSocietyDAOTest = await ethers.getContractFactory("DoomCultSocietyDAOTest");
+  it('test cannot directly mint', async function () {
+    const DoomCultSocietyDAOTest = await ethers.getContractFactory('DoomCultSocietyDAOTest');
     const doomCultDAO = await DoomCultSocietyDAOTest.deploy({ gasLimit: 10000000 });
     await doomCultDAO.deployed();
 
@@ -173,9 +188,8 @@ describe("DoomCultSociety", function () {
     await expect(doomCultSociety.mint(1)).to.be.reverted;
   });
 
-  
-  it("test gonzo phrases", async function() {
-    const DoomCultSociety = await ethers.getContractFactory("DoomCultSocietyTest");
+  it('test gonzo phrases', async function () {
+    const DoomCultSociety = await ethers.getContractFactory('DoomCultSocietyTest');
     const doomCult = await DoomCultSociety.deploy({ gasLimit: 10000000 });
     await doomCult.deployed();
 
@@ -244,13 +258,11 @@ describe("DoomCultSociety", function () {
     ];
 
     let seed = 0;
-    while(strings.length > 0 && (count < 500))
-    {
-
+    while (strings.length > 0 && count < 500) {
       const uri = await doomCult.getImgString(seed);
       strings = strings.filter(x => !uri.includes(x));
       count += 1;
-      seed += 101000001
+      seed += 101000001;
     }
     expect(strings.length).to.equal(0);
   });

@@ -10,9 +10,9 @@ contract ERC20 {
     mapping(address => uint256) internal _balances;
     mapping(address => mapping(address => uint256)) internal _allowances;
     uint256 internal _totalSupply;
-    string private constant _name = 'Doom Cult Society DAO';
-    string private constant _symbol = 'CUL';
-
+    string public constant name = 'Doom Cult Society DAO';
+    string public constant symbol = 'CUL';
+    uint256 public constant decimals = 18;
     uint256 internal constant ERROR_SIG = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     bytes32 internal constant TRANSFER_SIG = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
     bytes32 internal constant APPROVAL_SIG = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
@@ -21,18 +21,6 @@ contract ERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
     constructor() {}
-
-    function name() public pure returns (string memory) {
-        return _name;
-    }
-
-    function symbol() public pure returns (string memory) {
-        return _symbol;
-    }
-
-    function decimals() public pure returns (uint8) {
-        return 18;
-    }
 
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
@@ -80,10 +68,9 @@ contract ERC20 {
             if gt(amount, currentAllowance) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
-                mstore(0x24, 40)
-                mstore(0x44, 'ERC20: transfer amount exceeds a')
-                mstore(0x64, 'llowance')
-                revert(0x00, 0x84)
+                mstore(0x24, 23)
+                mstore(0x44, 'ERC20: amount>allowance')
+                revert(0x00, 0x64)
             }
         }
         unchecked {
@@ -98,30 +85,25 @@ contract ERC20 {
         uint256 amount
     ) internal {
         assembly {
-            if or(iszero(sender), iszero(recipient)) {
-                mstore(0x00, ERROR_SIG)
-                mstore(0x04, 0x20)
-                mstore(0x24, 37)
-                mstore(0x44, 'ERC20: transfer from the zero ad')
-                mstore(0x64, 'dress')
-                revert(0x00, 0x84)
-            }
-
             mstore(0x00, sender)
             mstore(0x20, _balances.slot)
             let balancesSlot := keccak256(0x00, 0x40)
             let senderBalance := sload(balancesSlot)
 
-            if gt(amount, senderBalance) {
+            if or(or(iszero(sender), iszero(recipient)), gt(amount, senderBalance)) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
-                mstore(0x24, 38)
-                mstore(0x44, 'ERC20: transfer amount exceeds b')
-                mstore(0x64, 'alance')
-                revert(0x00, 0x84)
+                mstore(0x24, 32)
+                mstore(0x44, 'ERC20: amount>balance or from==0')
+                revert(0x00, 0x64)
             }
 
             sstore(balancesSlot, sub(senderBalance, amount))
+
+            mstore(0x00, recipient)
+            balancesSlot := keccak256(0x00, 0x40)
+            // skip overflow check as we only have 30,000 tokens
+            sstore(balancesSlot, add(sload(balancesSlot), 1))
             mstore(0x00, amount)
             log3(0x00, 0x20, TRANSFER_SIG, sender, recipient)
         }
@@ -136,10 +118,9 @@ contract ERC20 {
             if or(iszero(owner), iszero(spender)) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
-                mstore(0x24, 36)
-                mstore(0x44, 'ERC20: approve from the zero add')
-                mstore(0x64, 'ress')
-                revert(0x00, 0x84)
+                mstore(0x24, 29)
+                mstore(0x44, 'ERC20: approve from 0 address')
+                revert(0x00, 0x64)
             }
 
             // _allowances[owner][spender] = amount
@@ -359,40 +340,17 @@ interface IERC721Metadata is IERC721 {
 }
 
 /**
- * @title ERC-721 Non-Fungible Token Standard, optional enumeration extension
- * @dev See https://eips.ethereum.org/EIPS/eip-721
- */
-interface IERC721Enumerable is IERC721 {
-    /**
-     * @dev Returns the total amount of tokens stored by the contract.
-     */
-    function totalSupply() external view returns (uint256);
-
-    /**
-     * @dev Returns a token ID owned by `owner` at a given `index` of its token list.
-     * Use along with {balanceOf} to enumerate all of ``owner``'s tokens.
-     */
-    function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256 tokenId);
-
-    /**
-     * @dev Returns a token ID at a given `index` of all the tokens stored by the contract.
-     * Use along with {totalSupply} to enumerate all tokens.
-     */
-    function tokenByIndex(uint256 index) external view returns (uint256);
-}
-
-/**
  * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
- * the Metadata extension and the Enumerable extension
+ * the Metadata extension but not the Enumerable extension
  *
  * Some parts written in Yul to reduce code
  */
-contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerable {
+contract ERC721 is IERC165, IERC721, IERC721Metadata {
     // Token name
-    string private constant _name = 'Doom Cult Society';
+    string public constant override name = 'Doom Cult Society';
 
     // Token symbol
-    string private constant _symbol = 'DED';
+    string public constant override symbol = 'DCS';
 
     uint256 internal constant ERROR_SIG = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     // event signatures
@@ -424,8 +382,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
         return
             interfaceId == type(IERC721).interfaceId ||
             interfaceId == type(IERC721Metadata).interfaceId ||
-            interfaceId == type(IERC165).interfaceId ||
-            interfaceId == type(IERC721Enumerable).interfaceId;
+            interfaceId == type(IERC165).interfaceId;
     }
 
     /**
@@ -471,32 +428,9 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     }
 
     /**
-     * @dev See {IERC721Metadata-name}.
-     */
-    function name() public view virtual override returns (string memory) {
-        return _name;
-    }
-
-    /**
-     * @dev See {IERC721Metadata-symbol}.
-     */
-    function symbol() public view virtual override returns (string memory) {
-        return _symbol;
-    }
-
-    /**
      * @dev See {IERC721Metadata-tokenURI}.
      */
     function tokenURI(uint256) public view virtual override returns (string memory) {
-        return '';
-    }
-
-    /**
-     * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
-     * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
-     * by default, can be overriden in child contracts.
-     */
-    function _baseURI() internal view virtual returns (string memory) {
         return '';
     }
 
@@ -506,29 +440,26 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     function approve(address to, uint256 tokenId) public virtual override {
         address owner = ownerOf(tokenId);
 
-        assembly {
-            if eq(to, owner) {
-                mstore(0x00, ERROR_SIG)
-                mstore(0x04, 0x20)
-                mstore(0x24, 33)
-                mstore(0x44, 'ERC721: approval to current owne')
-                mstore(0x64, 'r')
-                revert(0x00, 0x84)
-            }
-        }
         bool approvedForAll = isApprovedForAll(owner, msg.sender);
+        /**
+         * Failure cases
+         * 1. to == owner (if ya wanna approve yourself go stare in a mirror!)
+         * 2. !(msg.sender == owner OR approvedForAll == 1)
+         */
         assembly {
-            if iszero(or(eq(caller(), owner), approvedForAll)) {
+            if or(eq(to, owner), iszero(or(eq(caller(), owner), approvedForAll))) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
-                mstore(0x24, 55)
-                mstore(0x44, 'ERC721: approve caller is not ow')
-                mstore(0x64, 'er not approved for all')
-                revert(0x00, 0x84)
+                mstore(0x24, 19)
+                mstore(0x44, 'ERC721: bad approve')
+                revert(0x00, 0x64)
             }
-        }
 
-        _approve(to, tokenId);
+            mstore(0x00, tokenId)
+            mstore(0x20, _tokenApprovals.slot)
+            sstore(keccak256(0x00, 0x40), to)
+            log3(0x00, 0x20, APPROVAL_SIG, owner, to)
+        }
     }
 
     /**
@@ -541,10 +472,9 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
             if iszero(sload(keccak256(0x00, 0x40))) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
-                mstore(0x24, 44)
-                mstore(0x44, 'ERC721: approved query for nonex')
-                mstore(0x64, 'istent token')
-                revert(0x00, 0x84)
+                mstore(0x24, 19)
+                mstore(0x44, 'ERC721: bad approve')
+                revert(0x00, 0x64)
             }
 
             mstore(0x00, tokenId)
@@ -566,6 +496,7 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
                 revert(0x00, 0x64)
             }
 
+            // _operatorApprovals[_msgSender()][operator] = approved
             mstore(0x00, caller())
             mstore(0x20, _operatorApprovals.slot)
             mstore(0x20, keccak256(0x00, 0x40))
@@ -660,18 +591,6 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
     }
 
     /**
-     * @dev Returns whether `tokenId` exists.
-     *
-     * Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
-     *
-     * Tokens start existing when they are minted (`_mint`),
-     * and stop existing when they are burned (`_burn`).
-     */
-    function _exists(uint256 tokenId) internal view virtual returns (bool) {
-        return _owners[tokenId] != address(0);
-    }
-
-    /**
      * @dev Returns whether `spender` is allowed to manage `tokenId`.
      *
      * Requirements:
@@ -679,29 +598,29 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
      * - `tokenId` must exist.
      */
     function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual {
+        address owner;
+        bool approvedForAll = isApprovedForAll(owner, spender);
         assembly {
             mstore(0x00, tokenId)
             mstore(0x20, _owners.slot)
-            if iszero(sload(keccak256(0x00, 0x40))) {
+            owner := sload(keccak256(0x00, 0x40))
+
+            mstore(0x20, _tokenApprovals.slot)
+            let approved := sload(keccak256(0x00, 0x40))
+
+            /**
+             * Success Conditions
+             * 1. spender = owner
+             * 2. spender = approved
+             * 3. approvedForAll = true
+             * Also owner must NOT be 0
+             */
+            if or(iszero(or(or(eq(spender, owner), eq(approved, spender)), approvedForAll)), iszero(owner)) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 44)
                 mstore(0x44, 'ERC721: operator query for nonex')
                 mstore(0x64, 'istent token')
-                revert(0x00, 0x84)
-            }
-        }
-        address owner = ownerOf(tokenId);
-        bool isApprovedOrOwner = (spender == owner ||
-            getApproved(tokenId) == spender ||
-            isApprovedForAll(owner, spender));
-        assembly {
-            if iszero(isApprovedOrOwner) {
-                mstore(0x00, ERROR_SIG)
-                mstore(0x04, 0x20)
-                mstore(0x24, 49)
-                mstore(0x44, 'ERC721: transfer caller is not o')
-                mstore(0x64, 'wner nor approved')
                 revert(0x00, 0x84)
             }
         }
@@ -723,35 +642,49 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
         address to,
         uint256 tokenId
     ) internal virtual {
-        require(ownerOf(tokenId) == from, 'ERC721: transfer of token that is not own');
-        require(to != address(0), 'ERC721: transfer to the zero address');
-
-        _beforeTokenTransfer(from, to, tokenId);
-
-        // Clear approvals from the previous owner
-        _approve(address(0), tokenId);
-
-        _balances[from] -= 1;
-        _balances[to] += 1;
-        _owners[tokenId] = to;
-
+        // address owner = ownerOf(tokenId);
         assembly {
             mstore(0x00, tokenId)
+            mstore(0x20, _owners.slot)
+            let owner := sload(keccak256(0x00, 0x40))
+
+            // Clear approvals from the previous owner
+            mstore(0x00, tokenId)
+            mstore(0x20, _tokenApprovals.slot)
+            sstore(keccak256(0x00, 0x40), 0)
+            log3(0x00, 0x20, APPROVAL_SIG, owner, 0)
             log3(0x00, 0x20, TRANSFER_SIG, from, to)
-        }
-    }
 
-    /**
-     * @dev Approve `to` to operate on `tokenId`
-     *
-     * Emits a {Approval} event.
-     */
-    function _approve(address to, uint256 tokenId) internal virtual {
-        _tokenApprovals[tokenId] = to;
-        address owner = ownerOf(tokenId);
-        assembly {
-            mstore(0x00, tokenId)
-            log3(0x00, 0x20, TRANSFER_SIG, owner, to)
+            // _owners[tokenId] = to
+            mstore(0x20, _owners.slot)
+            sstore(keccak256(0x00, 0x40), to)
+
+            // _balances[from] -= 1
+            mstore(0x00, from)
+            mstore(0x20, _balances.slot)
+            let slot := keccak256(0x00, 0x40)
+            let fromBalance := sload(slot)
+            sstore(slot, sub(fromBalance, 0x01))
+
+            // _balances[to] += 1
+            mstore(0x00, to)
+            slot := keccak256(0x00, 0x40)
+            sstore(slot, add(sload(slot), 1))
+
+            /**
+             * Failure cases...
+             * 1. owner != from
+             * 2. to == 0
+             * 3. owner == 0
+             * 4. balances[from] == 0
+             */
+            if or(or(iszero(owner), iszero(fromBalance)), or(iszero(to), sub(owner, from))) {
+                mstore(0x00, ERROR_SIG)
+                mstore(0x04, 0x20)
+                mstore(0x24, 20)
+                mstore(0x44, 'ERC721: bad transfer')
+                revert(0x00, 0x64)
+            }
         }
     }
 
@@ -785,91 +718,6 @@ contract ERC721Enumerable is IERC165, IERC721, IERC721Metadata, IERC721Enumerabl
             }
         }
     }
-
-    // Mapping from owner to list of owned token IDs
-    mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
-
-    // Mapping from token ID to index of the owner tokens list
-    mapping(uint256 => uint256) private _ownedTokensIndex;
-
-    // Array with all token ids, used for enumeration
-    uint256[] internal _allTokens;
-
-    // Mapping from token id to position in the allTokens array
-    mapping(uint256 => uint256) private _allTokensIndex;
-
-    /**
-     * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
-     */
-    function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual override returns (uint256) {
-        require(index < balanceOf(owner), 'ERC721Enumerable: owner index out of bounds');
-        return _ownedTokens[owner][index];
-    }
-
-    /**
-     * @dev See {IERC721Enumerable-totalSupply}.
-     */
-    function totalSupply() public view virtual override returns (uint256) {
-        return _allTokens.length;
-    }
-
-    /**
-     * @dev See {IERC721Enumerable-tokenByIndex}.
-     */
-    function tokenByIndex(uint256 index) public view virtual override returns (uint256) {
-        require(index < ERC721Enumerable.totalSupply(), 'ERC721Enumerable: global index out of bounds');
-        return _allTokens[index];
-    }
-
-    /**
-     * @dev Hook that is called before any token transfer. This includes minting
-     * and burning.
-     *
-     * Calling conditions:
-     *
-     * - When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
-     * transferred to `to`.
-     * - When `from` is zero, `tokenId` will be minted for `to`.
-     * - When `to` is zero, ``from``'s `tokenId` will be burned.
-     * - `from` cannot be the zero address.
-     * - `to` cannot be the zero address.
-     *
-     * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-     */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {
-        if (from == address(0)) {
-            _allTokensIndex[tokenId] = _allTokens.length;
-            _allTokens.push(tokenId);
-        } else if (from != to) {
-            // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
-            // then delete the last slot (swap and pop).
-
-            uint256 lastTokenIndex = balanceOf(from) - 1;
-            uint256 tokenIndex = _ownedTokensIndex[tokenId];
-
-            // When the token to delete is the last token, the swap operation is unnecessary
-            if (tokenIndex != lastTokenIndex) {
-                uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
-
-                _ownedTokens[from][tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
-                _ownedTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
-            }
-
-            // This also deletes the contents at the last position of the array
-            delete _ownedTokensIndex[tokenId];
-            delete _ownedTokens[from][lastTokenIndex];
-        }
-        // skip check to see if `to == address(0)`, all code paths that lead to this fn already rule this out
-        if (to != from) {
-            uint256 length = balanceOf(to);
-            _ownedTokens[to][length] = tokenId;
-            _ownedTokensIndex[tokenId] = length;
-        }
-    }
 }
 
 /**
@@ -887,8 +735,10 @@ contract DoomCultSocietyDAO is ERC20 {
     uint256 public doomCounter; // number of weeks until contract is destroyed
     uint256 public timestampUntilNextEpoch; // countdown timer can decrease once block.timestamp > timestampUntilNextEpoch
 
-    uint256 public constant NUM_STARTING_CULTISTS = 30000;
-
+    // potential max cultists
+    uint256 internal constant MAX_CULTISTS = 30000;
+    // how many do we actually start with? (phase 2 starts after 4 weeks regardless)
+    uint256 public numStartingCultists;
     // If currentEpochTotalSacrificed <= lastEpocTotalSacrificed when epoch ends...kaboom!
     uint256 public currentEpochTotalSacrificed;
     uint256 public lastEpochTotalSacrificed;
@@ -941,7 +791,7 @@ contract DoomCultSocietyDAO is ERC20 {
 
     function attractCultists() public onlyAsleep {
         assembly {
-            if lt(NUM_STARTING_CULTISTS, add(1, sload(_totalSupply.slot))) {
+            if lt(MAX_CULTISTS, add(1, sload(_totalSupply.slot))) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 22)
@@ -964,10 +814,7 @@ contract DoomCultSocietyDAO is ERC20 {
     function wakeUp() public onlyAsleep {
         assembly {
             if iszero(
-                or(
-                    gt(add(sload(_totalSupply.slot), 1), NUM_STARTING_CULTISTS),
-                    gt(add(timestamp(), 1), sload(sleepTimer.slot))
-                )
+                or(gt(add(sload(_totalSupply.slot), 1), MAX_CULTISTS), gt(add(timestamp(), 1), sload(sleepTimer.slot)))
             ) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
@@ -978,9 +825,11 @@ contract DoomCultSocietyDAO is ERC20 {
             sstore(isAwake.slot, or(sload(isAwake.slot), 1))
             sstore(timestampUntilNextEpoch.slot, add(timestamp(), SECONDS_PER_WEEK))
             sstore(doomCounter.slot, 1)
+            let total := sload(_totalSupply.slot)
+            sstore(numStartingCultists.slot, total)
 
             // emit ItHasAwoken(_totalSupply)
-            mstore(0x00, sload(_totalSupply.slot))
+            mstore(0x00, total)
             log1(0x00, 0x20, IT_HAS_AWOKEN_SIG)
         }
     }
@@ -1004,6 +853,7 @@ contract DoomCultSocietyDAO is ERC20 {
 
     function sacrifice() public onlyAwake {
         uint256 remainingCultists;
+        uint256 sacrificedCultists;
         assembly {
             mstore(0x00, caller())
             mstore(0x20, _balances.slot)
@@ -1020,8 +870,9 @@ contract DoomCultSocietyDAO is ERC20 {
             sstore(currentEpochTotalSacrificed.slot, add(sload(currentEpochTotalSacrificed.slot), 1))
             remainingCultists := sub(sload(_totalSupply.slot), 1)
             sstore(_totalSupply.slot, remainingCultists)
+            sacrificedCultists := sub(sload(numStartingCultists.slot), remainingCultists)
         }
-        doomCultSociety.mint(doomCounter, remainingCultists, msg.sender);
+        doomCultSociety.mint(doomCounter, remainingCultists, sacrificedCultists, msg.sender);
         assembly {
             // emit Transfer(msg.sender, 0, 1)
             mstore(0x00, 1)
@@ -1070,36 +921,31 @@ contract DoomCultSocietyDAO is ERC20 {
  * It's more than a cult, it's a society!
  * We have culture, economic theories and heaps of dead cultists
  */
-contract DoomCultSociety is ERC721Enumerable {
-    uint256 private doomCultSocietyDAOAndMutex; // an address and a bool smooshed together
+contract DoomCultSociety is ERC721 {
+    address public doomCultSocietyDAO;
 
-    constructor() ERC721Enumerable() {
+    constructor() ERC721() {
         assembly {
-            sstore(doomCultSocietyDAOAndMutex.slot, caller())
+            sstore(doomCultSocietyDAO.slot, caller())
         }
     }
 
-    function doomCultSocietyDAO() public view returns (address res) {
-        assembly {
-            let smooshed := sload(doomCultSocietyDAOAndMutex.slot)
-            res := and(smooshed, sub(shl(160, 1), 1))
-        }
+    // Not enumerable but hey we have enough info for this method...so why not
+    // (until the DAO blows up that is!)
+    function totalSupply() public view returns (uint256) {
+        DoomCultSocietyDAO dao = DoomCultSocietyDAO(doomCultSocietyDAO);
+        return dao.numStartingCultists() - dao.totalSupply();
     }
 
     function mint(
         uint256 countdown,
         uint256 remainingCultists,
+        uint256 sacrificedCultists,
         address owner
     ) public {
         uint256 tokenId;
-        uint256 smooshed;
         assembly {
-            smooshed := sload(doomCultSocietyDAOAndMutex.slot)
-            let doomCultSocietyDAOAddr := and(smooshed, sub(shl(160, 1), 1))
-            let mutex := shr(160, smooshed)
-
-            //if or(mutex, sub(caller(), doomCultSocietyDAOAddr)) {
-            if iszero(eq(caller(), doomCultSocietyDAOAddr)) {
+            if iszero(eq(caller(), sload(doomCultSocietyDAO.slot))) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 10)
@@ -1107,12 +953,8 @@ contract DoomCultSociety is ERC721Enumerable {
                 revert(0x00, 0x64)
             }
 
-            tokenId := add(add(mul(remainingCultists, 100000000), mul(countdown, 1000000)), sload(_allTokens.slot))
-        }
+            tokenId := add(add(mul(remainingCultists, 100000000), mul(countdown, 1000000)), sacrificedCultists)
 
-        _beforeTokenTransfer(address(0), owner, tokenId);
-        bool isContract;
-        assembly {
             mstore(0x00, owner)
             mstore(0x20, _balances.slot)
             let slot := keccak256(0x00, 0x40)
@@ -1125,16 +967,6 @@ contract DoomCultSociety is ERC721Enumerable {
 
             mstore(0x00, tokenId)
             log3(0x00, 0x20, TRANSFER_SIG, 0, owner)
-
-            sstore(doomCultSocietyDAOAndMutex.slot, or(smooshed, shl(160, 1)))
-
-            isContract := gt(extcodesize(owner), 0)
-        }
-        if (isContract) {
-            _checkOnERC721ReceivedContract(address(0), owner, tokenId, '');
-        }
-        assembly {
-            sstore(doomCultSocietyDAOAndMutex.slot, and(sub(shl(160, 1), 1), smooshed))
         }
     }
 

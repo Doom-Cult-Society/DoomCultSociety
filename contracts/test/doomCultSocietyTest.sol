@@ -16,8 +16,8 @@ contract DoomCultSocietyDAOTest is DoomCultSocietyDAO {
     }
 
     function forceMaximumCultists() public {
-        _totalSupply = NUM_STARTING_CULTISTS;
-        _balances[msg.sender] = NUM_STARTING_CULTISTS;
+        _totalSupply = MAX_CULTISTS;
+        _balances[msg.sender] = MAX_CULTISTS;
     }
 
     function forceLargeSacrifice(uint256 num) public {
