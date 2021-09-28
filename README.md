@@ -47,9 +47,16 @@ The Doom Cult Society is designed to be played using the Doom Cult Society DAO c
 * **Doom Cult Society NFT Contract** (view/trade/lovingly embrace dead cultist NFTs): `0xfff`
 
 **Attract Cultists**: `attractCultists()` : will give the user 3 CUL tokens until all 30,000 CUL have been distributed  
+
 **Sacrifice Cultists**: `sacrificeCultist()` : will destroy 1 CUL and mint a Doom Cult Society NFT in exchange  
+
 **Worship the DAO**: `worship()` : if 1 week has passed since the last `worship()`, the `doomCounter` is advanced 1 week. If `doomCounter > 52`, the DAO is **obliterated**. If the current week's total sacrificed is less than the previous week, the DAO is **obliterated**  
-**Stats**: `currentEpochTotalSacrificed()`, `lastEpochTotalSacrificed()`, `timestampUntilNextEpoch()` (UNIX timestamp that describes when the DAO can be worshipped)
+
+**Game Stats**:
+
+* `lastEpochTotalSacrificed()` : How many sacrificed last week?
+* `currentEpochTotalSacrificed()` : How many sacrifices so far this week?
+* `timestampUntilNextEpoch()` : Timestamp after which the DAO can be `worship()`ped, and the faithful tested...
 
 # View NFTs
 
