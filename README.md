@@ -62,7 +62,7 @@ The Doom Cult Society is designed to be played using the Doom Cult Society DAO c
 
 The Doom Cult Society NFTs have their image data directly embedded into their tokenURI.  
 
-To view the image directly call `imageURI(tokenId)` on Etherscan and paste the output string into your browser!  
+To view a token's image directly call `DoomCultSociety.imageURI(tokenId)` on Etherscan and paste the output string into your browser!  
 
 <p align="center">
 <img src="./scrobble.png" />
