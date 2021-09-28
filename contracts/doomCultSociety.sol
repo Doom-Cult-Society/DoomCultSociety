@@ -784,9 +784,19 @@ contract DoomCultSocietyDAO is ERC20 {
         assembly {
             sstore(sleepTimer.slot, add(timestamp(), mul(4, SECONDS_PER_WEEK)))
         }
-        // All cultists are equal... but some are more equal than others. Hon hon hon.
-        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 800;
-        _totalSupply = 800;
+        // Mmmmmmmmmmm slightly corrupt cheeky premine...
+        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 400; // some extra for givaways
+        _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 200; // om
+        _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 200; // nom
+        _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 200; // nom
+        _balances[address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810)] = 200; // *burp*
+        _totalSupply = 1200;
+
+        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 400);
+        emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 200);
+        emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 200);
+        emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 200);
+        emit Transfer(address(0), address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810), 200);
     }
 
     function attractCultists() public onlyAsleep {
@@ -1770,6 +1780,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table1, 0x2c0), 'Z-List Celebrities')
             mstore(add(table1, 0x2e0), 'High-Stakes Knitting')
             mstore(add(table1, 0x300), 'Hardtack And Whiskey')
+            mstore(add(table1, 0x320), 'Melodramatic Bullshit')
 
             mstore(table2, 23)
             mstore(add(table2, 0x20), 11)
@@ -1796,8 +1807,9 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table2, 0x2c0), 18)
             mstore(add(table2, 0x2e0), 20)
             mstore(add(table2, 0x300), 20)
+            mstore(add(table2, 0x320), 21)
 
-            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 24))))
+            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 25))))
             mstore(p, mload(add(table1, idx)))
             p := add(p, mload(add(table2, idx)))
 
