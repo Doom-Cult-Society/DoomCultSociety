@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity ^0.8.0;
 
 /**
  * @dev ERC20 Contract Implementation
@@ -1520,9 +1520,14 @@ contract DoomCultSociety is ERC721 {
             mstore(p, '"/></g></defs><g filter="invert(')
             p := add(p, 32)
             {
-                mstore8(p, add(0x30, and(seed, 1))) // "0" or "1"
+                // 1% change of inverting colours
+                // increases to 50% iff week counter is 10 or greater
+                let isWeekTenYet := gt(countdown, 9)
+                let invertProbInv := add(mul(isWeekTenYet, 2), mul(iszero(isWeekTenYet), 100))
+                let inverted := eq(mod(seed, invertProbInv), 0)
+                mstore8(p, add(0x30, inverted)) // "0" or "1"
                 mstore(add(p, 1), ') hue-rotate(')
-                seed := shr(1, seed)
+                seed := shr(8, seed)
                 let hue := mul(30, mod(seed, 12)) // 0 to 360 in steps of 12
                 mstore8(add(p, 0xe), add(0x30, mod(div(hue, 100), 10)))
                 mstore8(add(p, 0xf), add(0x30, mod(div(hue, 10), 10)))
@@ -1647,7 +1652,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table1, 0xe0), 'Gruesomly ')
             mstore(add(table1, 0x100), 'Confusingly ')
             mstore(add(table1, 0x120), 'Angrily ')
-            mstore(add(table1, 0x140), 'Curiously ')
+            mstore(add(table1, 0x140), 'Carelessly ')
             mstore(add(table1, 0x160), 'Mysteriously ')
             mstore(add(table1, 0x180), 'Shamefully ')
 
@@ -1661,7 +1666,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table2, 0xe0), 11)
             mstore(add(table2, 0x100), 12)
             mstore(add(table2, 0x120), 8)
-            mstore(add(table2, 0x140), 10)
+            mstore(add(table2, 0x140), 11)
             mstore(add(table2, 0x160), 13)
             mstore(add(table2, 0x180), 11)
 
@@ -1731,6 +1736,8 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table1, 0x260), 'Voracious ')
             mstore(add(table1, 0x280), "Grandmother's Leftover ")
             mstore(add(table1, 0x2a0), "M. Night Shyamalan's ")
+            mstore(add(table1, 0x2c0), 'Emergency British ')
+            mstore(add(table1, 0x2e0), 'Oecumenical ')
 
             mstore(add(table2, 0x20), 19)
             mstore(add(table2, 0x40), 11)
@@ -1753,10 +1760,12 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table2, 0x260), 10)
             mstore(add(table2, 0x280), 23)
             mstore(add(table2, 0x2a0), 21)
+            mstore(add(table2, 0x2c0), 18)
+            mstore(add(table2, 0x2e0), 12)
 
-            let rare := eq(mod(seed, 100), 0)
+            let rare := eq(mod(seed, 100), 0) // mmmm rare communism...
 
-            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 21))))
+            idx := mul(iszero(rare), add(0x20, shl(5, mod(seed, 23))))
             mstore(p, mload(add(table1, idx)))
             p := add(p, mload(add(table2, idx)))
             seed := shr(16, seed)
