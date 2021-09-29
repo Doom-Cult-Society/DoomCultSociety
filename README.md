@@ -123,7 +123,7 @@ Even if the community somehow manages to keep the DAO going, the contract autode
 
 ### Is there a Discord?
 
-There is no Discord, Slack, Whatsapp, Twitter or Tinder. Only Github.
+There is no Discord, Slack, Whatsapp, Twitter or Tinder. **Only Github.**
 
 ### Is Doom Cult Society audited?
 
