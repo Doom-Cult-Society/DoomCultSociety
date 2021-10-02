@@ -1,5 +1,8 @@
+const { phraseList1, phraseList2, phraseList3, phraseList4 } = require('../src/phrases');
+
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
+const fs = require('fs');
 
 describe('DoomCultSociety', function () {
   async function getDoomCultSociety(doomCultDAO) {
@@ -209,86 +212,15 @@ describe('DoomCultSociety', function () {
 
     let test = true;
     let count = 0;
-    let strings = [
-      'Willingly ',
-      'Enthusiastically ',
-      'Cravenly ',
-      'Gratefully ',
-      'Vicariously ',
-      'Shockingly ',
-      'Gruesomly ',
-      'Confusingly ',
-      'Angrily ',
-      'Carelessly ',
-      'Mysteriously ',
-      'Shamefully ',
-      'Banished To The Void Using',
-      'Crushed Under The Weight Of',
-      'Devoured By',
-      'Erased From Existence By',
-      'Extinguished By',
-      'Hugged To Death By',
-      'Obliterated By',
-      'Ripped Apart By',
-      'Sacrificed In The Service Of',
-      'Slaughtered Defending',
-      'Succumbed To Burns From',
-      'Torn To Shreds By',
-      'Vanished At A Party Hosted By',
-      'Vivisected Via',
-      'Anarcho-Capitalist ',
-      'Artificial ',
-      'Energetic ',
-      'Extreme ',
-      'Ferocious ',
-      'French ',
-      'Funkadelic ',
-      'Grossly Incompetent ',
-      'Hysterical ',
-      'Irrepressible ',
-      'Morally Bankrupt ',
-      'Overcollateralized ',
-      'Politically Indiscreet ',
-      'Punch-Drunk ',
-      'Punk ',
-      'Time-Travelling ',
-      'Unsophisticated ',
-      'Volcanic ',
-      'Voracious ',
-      "Grandmother's Leftover ",
-      '4D Buckaroo',
-      'Ballroom Dancing Fever',
-      'Bees',
-      'Canadians',
-      'Electric Jazz',
-      'Explosions',
-      'FOMO',
-      'Giant Gummy Bears',
-      'Gigawatt Lasers',
-      'Heavy Metal',
-      'Lifestyle Vloggers',
-      'Memes',
-      'Physics',
-      'Rum Runners',
-      'Swine Flu',
-      'Theatre Critics',
-      'Trainee Lawyers',
-      'Twitterati',
-      'Velociraptors',
-      'Witches',
-      'Wizards',
-      'Z-List Celebrities',
-      'High-Stakes Knitting',
-      'Hardtack And Whiskey',
+
+    let strings = phraseList1.concat(phraseList2, phraseList3, phraseList4, [
       'The Communist Manifesto',
-      'Emergency British ',
-      'Oecumenical ',
-      'Week: 0',
-      'Week: 1',
-      'Week: 52',
-      '0 Cultists Remaining',
-      '1 Cultist Remaining', // grammar yo
-      '2 Cultists Remaining',
+      '0',
+      '1',
+      '52',
+      '0',
+      '1',
+      '2',
       '#1',
       '#2',
       '#3',
@@ -300,11 +232,16 @@ describe('DoomCultSociety', function () {
       '#0',
       '#o',
       '#p',
-    ];
+    ]);
 
-    let seed = 0;
+    let seed = 34051000858;
     while (strings.length > 0 && count < 500) {
       const uri = await doomCult.getImgString(seed);
+      // if (count == 0) {
+      //   await fs.writeFile('./src/test.xml', uri, () => {});
+      //   break;
+      //   //   console.log(uri);
+      // }
       strings = strings.filter(x => !uri.includes(x));
       count += 1;
       seed += 101000001;
