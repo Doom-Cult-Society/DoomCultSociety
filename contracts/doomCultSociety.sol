@@ -951,13 +951,14 @@ contract DoomCultSociety is ERC721 {
         assembly {
             sstore(doomCultSocietyDAO.slot, caller())
         }
+        mint(0, 30000, 0, address(this));
     }
 
     // Not enumerable but hey we have enough info for this method...so why not
     // (until the DAO blows up that is!)
     function totalSupply() public view returns (uint256) {
         DoomCultSocietyDAO dao = DoomCultSocietyDAO(doomCultSocietyDAO);
-        return dao.numStartingCultists() - dao.totalSupply();
+        return dao.numStartingCultists() - (dao.totalSupply() / 1000000000000000000);
     }
 
     function mint(
@@ -2076,7 +2077,7 @@ contract DoomCultSociety is ERC721 {
             mstore(ptr, '"}')
             mstore(innerData, add(mload(innerData), 2))
         }
-        return Base64.encode(innerData, 0, 0);
+        return string(abi.encodePacked('data:application/json;base64,', Base64.encode(innerData, 0, 0)));
     }
 
     function imageURI(uint256 tokenId) public pure returns (string memory) {
