@@ -43,8 +43,8 @@ Minting a Doom Cult Society NFT on week 52 can be considered the game's 'win con
 
 The Doom Cult Society is designed to be played using the Doom Cult Society DAO contract interface in Etherscan.
 
-* **Doom Cult Society DAO Contract** (attract/sacrifice cultists): `0xfff`  
-* **Doom Cult Society NFT Contract** (view/trade/lovingly embrace dead cultist NFTs): `0xfff`
+* [**Doom Cult Society DAO Contract**](https://etherscan.io/address/0xc7a74edda179d41544eba18e58344392d0620070#readContract) (attract/sacrifice cultists): `0xc7a74edda179d41544eba18e58344392d0620070`
+* [**Doom Cult Society NFT Contract**](https://etherscan.io/address/0x5bfa95c8b9e72cddd06afe388bd4cb64d4969633#readContract) (view/trade/lovingly embrace dead cultist NFTs): `0x5bfa95c8b9e72cddd06afe388bd4cb64d4969633`
 
 **Attract Cultists**: `attractCultists()` : will give the user 3 CUL tokens until all 30,000 CUL have been distributed  
 
