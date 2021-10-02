@@ -11,6 +11,7 @@ contract ERC20 {
     string public constant name = 'Doom Cult Society DAO';
     string public constant symbol = 'CUL';
     uint256 public constant decimals = 18;
+    uint256 public constant CURRENCY_MULTIPLIER = 1000000000000000000;
     uint256 internal constant ERROR_SIG = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     bytes32 internal constant TRANSFER_SIG = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
     bytes32 internal constant APPROVAL_SIG = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
@@ -731,8 +732,8 @@ contract DoomCultSocietyDAO is ERC20 {
     uint256 public doomCounter; // number of weeks until contract is destroyed
     uint256 public timestampUntilNextEpoch; // countdown timer can decrease once block.timestamp > timestampUntilNextEpoch
 
-    // potential max cultists
-    uint256 internal constant MAX_CULTISTS = 30000;
+    // potential max cultists (incl. currency multiplier. This is 30,000 CUL)
+    uint256 internal constant MAX_CULTISTS = 30000000000000000000000;
     // how many do we actually start with? (phase 2 starts after 4 weeks regardless)
     uint256 public numStartingCultists;
     // If currentEpochTotalSacrificed <= lastEpocTotalSacrificed when epoch ends...kaboom!
@@ -781,18 +782,20 @@ contract DoomCultSocietyDAO is ERC20 {
             sstore(sleepTimer.slot, add(timestamp(), mul(4, SECONDS_PER_WEEK)))
         }
         // Mmmmmmmmmmm slightly corrupt cheeky premine...
-        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 400; // some extra for givaways
-        _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 200; // om
-        _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 200; // nom
-        _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 200; // nom
-        _balances[address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810)] = 200; // *burp*
-        _totalSupply = 1200;
+        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 400 * CURRENCY_MULTIPLIER; // some extra for givaways
+        _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 200 * CURRENCY_MULTIPLIER; // om
+        _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 200 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 200 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810)] = 200 * CURRENCY_MULTIPLIER; // *burp*
+        _balances[address(0x10715Db3d70bBB01f39B6A6CA817cbcf2F6e9B5f)] = 200 * CURRENCY_MULTIPLIER;
+        _totalSupply = 1400 * CURRENCY_MULTIPLIER;
 
-        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 400);
-        emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 200);
-        emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 200);
-        emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 200);
-        emit Transfer(address(0), address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810), 200);
+        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 400 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 200 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 200 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 200 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810), 200 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x10715Db3d70bBB01f39B6A6CA817cbcf2F6e9B5f), 200 * CURRENCY_MULTIPLIER);
     }
 
     function attractCultists() public onlyAsleep {
@@ -804,15 +807,16 @@ contract DoomCultSocietyDAO is ERC20 {
                 mstore(0x44, 'No remaining cultists!')
                 revert(0x00, 0x64)
             }
+            let numTokens := mul(3, CURRENCY_MULTIPLIER)
             mstore(0x00, caller())
             mstore(0x20, _balances.slot)
             let balanceSlot := keccak256(0x00, 0x40)
             // _balances[msg.sender] += 3
-            sstore(balanceSlot, add(sload(balanceSlot), 3))
+            sstore(balanceSlot, add(sload(balanceSlot), numTokens))
             // _totalSupply += 3
-            sstore(_totalSupply.slot, add(sload(_totalSupply.slot), 3))
+            sstore(_totalSupply.slot, add(sload(_totalSupply.slot), numTokens))
             // emit Transfer(0, msg.sender, 3)
-            mstore(0x00, 3)
+            mstore(0x00, numTokens)
             log3(0x00, 0x20, TRANSFER_SIG, 0, caller())
         }
     }
@@ -832,7 +836,7 @@ contract DoomCultSocietyDAO is ERC20 {
             sstore(timestampUntilNextEpoch.slot, add(timestamp(), SECONDS_PER_WEEK))
             sstore(doomCounter.slot, 1)
             let total := sload(_totalSupply.slot)
-            sstore(numStartingCultists.slot, total)
+            sstore(numStartingCultists.slot, div(total, CURRENCY_MULTIPLIER))
 
             // emit ItHasAwoken(_totalSupply)
             mstore(0x00, total)
@@ -853,7 +857,7 @@ contract DoomCultSocietyDAO is ERC20 {
             // emit Obliterate(_totalSupply)
             mstore(0x00, sload(_totalSupply.slot))
             log1(0x00, 0x20, OBLITERATE_SIG)
-            selfdestruct(0x00) // so long and thanks for all the fish
+            selfdestruct(0x00) // so long and thanks for all the fish!
         }
     }
 
@@ -863,30 +867,33 @@ contract DoomCultSocietyDAO is ERC20 {
      *      This function is for those who just want to run those numbers up for maximum chaos
      */
     function sacrificeManyButOnlyMintOneNFT(uint256 num) public onlyAwake {
-        uint256 remainingCultists;
-        uint256 sacrificedCultists;
+        uint256 totalRemainingCultists;
+        uint256 totalSacrificedCultists;
+        uint256 requiredTokens;
         assembly {
+            requiredTokens := mul(CURRENCY_MULTIPLIER, num)
             mstore(0x00, caller())
             mstore(0x20, _balances.slot)
             let slot := keccak256(0x00, 0x40)
             let userBal := sload(slot)
-            if or(lt(userBal, num), iszero(num)) {
+            if or(lt(userBal, requiredTokens), iszero(num)) {
                 mstore(0x00, ERROR_SIG)
                 mstore(0x04, 0x20)
                 mstore(0x24, 21)
                 mstore(0x44, 'Insufficient Cultists')
                 revert(0x00, 0x64)
             }
-            sstore(slot, sub(userBal, num))
+            sstore(slot, sub(userBal, requiredTokens))
             sstore(currentEpochTotalSacrificed.slot, add(sload(currentEpochTotalSacrificed.slot), num))
-            remainingCultists := sub(sload(_totalSupply.slot), num)
-            sstore(_totalSupply.slot, remainingCultists)
-            sacrificedCultists := sub(sload(numStartingCultists.slot), remainingCultists)
+            let remainingTokens := sub(sload(_totalSupply.slot), requiredTokens)
+            totalRemainingCultists := div(remainingTokens, CURRENCY_MULTIPLIER)
+            sstore(_totalSupply.slot, remainingTokens)
+            totalSacrificedCultists := sub(sload(numStartingCultists.slot), totalRemainingCultists)
         }
-        doomCultSociety.mint(doomCounter, remainingCultists, sacrificedCultists, msg.sender);
+        doomCultSociety.mint(doomCounter, totalRemainingCultists, totalSacrificedCultists, msg.sender);
         assembly {
             // emit Transfer(msg.sender, 0, num)
-            mstore(0x00, num)
+            mstore(0x00, requiredTokens)
             log3(0x00, 0x20, TRANSFER_SIG, caller(), 0)
         }
     }

@@ -23,17 +23,17 @@ describe('DoomCultSociety', function () {
     const oldBalance = (await doomCultDAO.balanceOf(owner.address)).toNumber();
     await expect(oldBalance).to.equal(0);
     await doomCultDAO.attractCultists();
-    const newBalance = (await doomCultDAO.balanceOf(owner.address)).toNumber();
-    await expect(newBalance).to.equal(3);
+    const newBalance = await doomCultDAO.balanceOf(owner.address);
+    await expect(newBalance).to.equal('3000000000000000000');
 
     await doomCultDAO.forceAwake();
     await expect(doomCultDAO.attractCultists()).to.be.reverted;
 
-    await doomCultDAO.transfer(addr1.address, 1);
-    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(1);
-    expect((await doomCultDAO.balanceOf(owner.address)).toNumber()).to.equal(2);
+    await doomCultDAO.transfer(addr1.address, BigInt('1000000000000000000'));
+    expect(await doomCultDAO.balanceOf(addr1.address)).to.equal(BigInt('1000000000000000000'));
+    expect(await doomCultDAO.balanceOf(owner.address)).to.equal(BigInt('2000000000000000000'));
 
-    await expect(doomCultDAO.transfer(addr1.address, 10)).to.be.reverted;
+    await expect(doomCultDAO.transfer(addr1.address, BigInt('10000000000000000000'))).to.be.reverted;
 
     await doomCultDAO.approve(addr1.address, 2);
 
@@ -43,9 +43,9 @@ describe('DoomCultSociety', function () {
 
     await doomCultDAO.connect(addr1).transferFrom(owner.address, addr1.address, 2);
 
-    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(3);
-    expect((await doomCultDAO.balanceOf(owner.address)).toNumber()).to.equal(0);
-    expect((await doomCultDAO.totalSupply()).toNumber()).to.equal(1203);
+    expect(await doomCultDAO.balanceOf(addr1.address)).to.equal(BigInt('1000000000000000002'));
+    expect(await doomCultDAO.balanceOf(owner.address)).to.equal(BigInt('1999999999999999998'));
+    expect(await doomCultDAO.totalSupply()).to.equal(BigInt('1403000000000000000000'));
   });
 
   it('test awake', async function () {
@@ -104,12 +104,12 @@ describe('DoomCultSociety', function () {
 
     await doomCultDAO.sacrifice();
 
-    expect(await doomCultDAO.totalSupply()).to.equal(29999);
+    expect(await doomCultDAO.totalSupply()).to.equal(BigInt('29999000000000000000000'));
     const [owner, addr1] = await ethers.getSigners();
 
-    await doomCultDAO.transfer(addr1.address, 2);
+    await doomCultDAO.transfer(addr1.address, BigInt('2000000000000000000'));
 
-    expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(2);
+    expect(await doomCultDAO.balanceOf(addr1.address)).to.equal(BigInt('2000000000000000000'));
     await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(0)).to.be.reverted;
     await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(3)).to.be.reverted;
     await doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(2);
@@ -154,7 +154,7 @@ describe('DoomCultSociety', function () {
     await doomCultDAO.wakeUp();
 
     expect(await doomCultDAO.doomCounter()).to.equal(1);
-    expect((await doomCultDAO.totalSupply()).toNumber()).to.equal(30000);
+    expect(await doomCultDAO.totalSupply()).to.equal(BigInt('30000000000000000000000'));
 
     await expect(doomCultDAO.worship()).to.be.reverted;
 
