@@ -27,7 +27,7 @@ const phraseList2 = [
   'Succumbed To Burns From',
   'Torn To Shreds By',
   'Vanished At A Party Hosted By',
-  'Vivisected Via', // ?
+  'Vivisected Via',
   'Lost Everything To',
   "Just Couldn't Cope With",
   'Tried To Mess With',

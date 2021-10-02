@@ -14,7 +14,7 @@
 
 Wnat to know more? Doom Cult Society has two phases:
 
-***
+---
 
 # Phase 1: Prognostication
 
@@ -37,32 +37,32 @@ It is a doom cult after all.
 
 Minting a Doom Cult Society NFT on week 52 can be considered the game's 'win condition' ...whatever that means.
 
-***
+---
 
 # How To Play
 
 The Doom Cult Society is designed to be played using the Doom Cult Society DAO contract interface in Etherscan.
 
-* [**Doom Cult Society DAO Contract**](https://etherscan.io/address/0xc7a74edda179d41544eba18e58344392d0620070#readContract) (attract/sacrifice cultists): `0xc7a74edda179d41544eba18e58344392d0620070`
-* [**Doom Cult Society NFT Contract**](https://etherscan.io/address/0x5bfa95c8b9e72cddd06afe388bd4cb64d4969633#readContract) (view/trade/lovingly embrace dead cultist NFTs): `0x5bfa95c8b9e72cddd06afe388bd4cb64d4969633`
+- [**Doom Cult Society DAO Contract**](https://etherscan.io/address/0xc7a74edda179d41544eba18e58344392d0620070#readContract) (attract/sacrifice cultists): `0xc7a74edda179d41544eba18e58344392d0620070`
+- [**Doom Cult Society NFT Contract**](https://etherscan.io/address/0x5bfa95c8b9e72cddd06afe388bd4cb64d4969633#readContract) (view/trade/lovingly embrace dead cultist NFTs): `0x5bfa95c8b9e72cddd06afe388bd4cb64d4969633`
 
-**Attract Cultists**: `attractCultists()` : will give the user 3 CUL tokens until all 30,000 CUL have been distributed  
+**Attract Cultists**: `attractCultists()` : will give the user 3 CUL tokens until all 30,000 CUL have been distributed
 
-**Sacrifice Cultists**: `sacrificeCultist()` : will destroy 1 CUL and mint a Doom Cult Society NFT in exchange  
+**Sacrifice Cultists**: `sacrificeCultist()` : will destroy 1 CUL and mint a Doom Cult Society NFT in exchange
 
-**Worship the DAO**: `worship()` : if 1 week has passed since the last `worship()`, the `doomCounter` is advanced 1 week. If `doomCounter > 52`, the DAO is **obliterated**. If the current week's total sacrificed is less than the previous week, the DAO is **obliterated**  
+**Worship the DAO**: `worship()` : if 1 week has passed since the last `worship()`, the `doomCounter` is advanced 1 week. If `doomCounter > 52`, the DAO is **obliterated**. If the current week's total sacrificed is less than the previous week, the DAO is **obliterated**
 
 **Game Stats**:
 
-* `lastEpochTotalSacrificed()` : How many sacrificed last week?
-* `currentEpochTotalSacrificed()` : How many sacrifices so far this week?
-* `timestampUntilNextEpoch()` : Timestamp after which the DAO can be `worship()`ped, and the faithful tested...
+- `lastEpochTotalSacrificed()` : How many sacrificed last week?
+- `currentEpochTotalSacrificed()` : How many sacrifices so far this week?
+- `timestampUntilNextEpoch()` : Timestamp after which the DAO can be `worship()`ped, and the faithful tested...
 
 # View NFTs
 
-The Doom Cult Society NFTs have their image data directly embedded into their tokenURI.  
+The Doom Cult Society NFTs have their image data directly embedded into their tokenURI.
 
-To view a token's image directly call `DoomCultSociety.imageURI(tokenId)` on Etherscan and paste the output string into your browser!  
+To view a token's image directly call `DoomCultSociety.imageURI(tokenId)` on Etherscan and paste the output string into your browser!
 
 <p align="center">
 <img src="./scrobble.png" />
@@ -74,12 +74,11 @@ To view a token's image directly call `DoomCultSociety.imageURI(tokenId)` on Eth
 <img src="./scribble.png" />
 </p>
 
-
-***
+---
 
 Doom Cult Society is open source software licensed under the Apache-2.0 license. Please feel free to contribute, share, fork, vampire, heckle etc.
 
-***
+---
 
 # FAQ
 
@@ -91,18 +90,22 @@ Sort of. Cultists (CUL) are tokens, not NFTs. Once Phase 2 begins you can sacrif
 
 The Doom Cult NFT contract autogenerates a .svg image based off of:
 
-1. How many weeks in did you sacrifice your cultist
-2. How many living cultists are still remaining
+1. How many weeks in did you sacrifice your cultist (disp. top-left of token)
+2. How many living cultists are still remaining (disp. top-right of token)
+
+Each token's appearance is pseudorandomly generated from the above information.
 
 In addition, each token describes the highly plausible manner in which your cultist shuffled off this mortal coil. As such, a flip-book of these NFTs can be considered an HR-compliant safety manual on how to stay alive in these trying times.
 
 ### What are the pros and cons of the Doom Cult Society?
 
 **Pros**
+
 1. Meet like-minded individuals and trade tips on how to survive the comping apocalypse.
 2. CUL tokens are backed by divine economics: religious fervor drives community engagement!
 
 **Cons**
+
 1. Slight risk of being sucked into an apocalyptic death cult
 
 ### How do I get CUL tokens?
@@ -117,7 +120,7 @@ All 30,000 CUL have been distributed and I am afraid you are too late. I would s
 
 Due to the completely backwards economics of the Doom Cult Society, there is an overwhelming likelihood that the DAO contract will be destroyed shortly after the game starts.  
 This destroys all CUL tokens.  
-Even if the community somehow manages to keep the DAO going, the contract autodestructs after 52 weeks.  
+Even if the community somehow manages to keep the DAO going, the contract autodestructs after 52 weeks.
 
 (Not investment advice. If you're taking advice from text written by a stranger and posted to a webpage literally titled "Doom Cult Society", you should probably put down the blockchain and go outside for a bit...)
 
@@ -128,3 +131,27 @@ There is no Discord, Slack, Whatsapp, Twitter or Tinder. **Only Github.**
 ### Is Doom Cult Society audited?
 
 It's not that kind of crypto project . More of a "threw together over a weekend" kind of deal. Use at your own risk.
+
+---
+
+# Doom Cult Society Rare-O-Meter &#x2728;
+
+Well now, imagine you're an aspiring cult master and have acquired a new Dead Cult Society NFT. This is a simple guide to determine the all-important question: _LOOKS RARE?_
+
+## 1: IS YOUR CULTIST SPINNY?
+
+No? NOT RARE. SCRUB TOKEN. NEXT.
+
+## 2: IS YOUR CULTIST BOUNCY?
+
+No? NOT RARE. NON-BOUNCY TOKEN. WEAK. NEXT.
+
+## 3: IS YOUR CULTIST SHINY?
+
+No? NOT RARE. DULL TOKEN. DULL BAG HOLDER. NEXT.
+
+## STILL CONFUSED? THIS IS WHAT RARE LOOKS LIKE. NOT A REAL TOKEN, REPRESENTATIVE SAMPLE ONLY.
+
+<p align="center">
+<img src="./looksrare.gif" width="350" height="400" />
+</p>

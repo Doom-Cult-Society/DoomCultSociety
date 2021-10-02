@@ -1736,7 +1736,6 @@ contract DoomCultSociety is ERC721 {
 
             {
                 let livingCultists := div(tokenId, 100000000) // 100 million
-                // let oneCultist := eq(livingCultists, 1)
                 switch eq(livingCultists, 0)
                 case 1 {
                     mstore8(p, 0x30)
