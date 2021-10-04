@@ -781,21 +781,31 @@ contract DoomCultSocietyDAO is ERC20 {
         assembly {
             sstore(sleepTimer.slot, add(timestamp(), mul(4, SECONDS_PER_WEEK)))
         }
-        // Mmmmmmmmmmm slightly corrupt cheeky premine...
-        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 400 * CURRENCY_MULTIPLIER; // some extra for givaways
-        _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 200 * CURRENCY_MULTIPLIER; // om
-        _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 200 * CURRENCY_MULTIPLIER; // nom
-        _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 200 * CURRENCY_MULTIPLIER; // nom
-        _balances[address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810)] = 200 * CURRENCY_MULTIPLIER; // *burp*
-        _balances[address(0x10715Db3d70bBB01f39B6A6CA817cbcf2F6e9B5f)] = 200 * CURRENCY_MULTIPLIER;
-        _totalSupply = 1400 * CURRENCY_MULTIPLIER;
+        // Mmmmmmmmmmm slightly corrupt cheeky premine aka 6% founder reward
+        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 800 * CURRENCY_MULTIPLIER; // some extra for givaways
+        _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 100 * CURRENCY_MULTIPLIER; // om
+        _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x10715Db3d70bBB01f39B6A6CA817cbcf2F6e9B5f)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x4a4866086D4b74521624Dbaec9478C9973Ff2C8e)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0xB658bF75C8968e8C9a577D5c8814803A1dDD0939)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x99A94D55417aaCC993889d5C574B07F01Ad35920)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0xE71f18D8F2e874AD3284C1A432A38fD158e35D70)] = 100 * CURRENCY_MULTIPLIER; // *burp*
+        _balances[address(0x934a19c7f2cD41D330d00C02884504fb59a33F36)] = 100 * CURRENCY_MULTIPLIER;
+        _totalSupply = 1800 * CURRENCY_MULTIPLIER;
 
-        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 400 * CURRENCY_MULTIPLIER);
-        emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 200 * CURRENCY_MULTIPLIER);
-        emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 200 * CURRENCY_MULTIPLIER);
-        emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 200 * CURRENCY_MULTIPLIER);
-        emit Transfer(address(0), address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810), 200 * CURRENCY_MULTIPLIER);
-        emit Transfer(address(0), address(0x10715Db3d70bBB01f39B6A6CA817cbcf2F6e9B5f), 200 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 800 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x53DF4Fc15BdAfd4c01ca289797A85D00cC791810), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x10715Db3d70bBB01f39B6A6CA817cbcf2F6e9B5f), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x4a4866086D4b74521624Dbaec9478C9973Ff2C8e), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0xB658bF75C8968e8C9a577D5c8814803A1dDD0939), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x99A94D55417aaCC993889d5C574B07F01Ad35920), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0xE71f18D8F2e874AD3284C1A432A38fD158e35D70), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x934a19c7f2cD41D330d00C02884504fb59a33F36), 100 * CURRENCY_MULTIPLIER);
     }
 
     function attractCultists() public onlyAsleep {
@@ -866,7 +876,7 @@ contract DoomCultSocietyDAO is ERC20 {
      *      If you want lots of NFTs call `sacrifice()` multiple times
      *      This function is for those who just want to run those numbers up for maximum chaos
      */
-    function sacrificeManyButOnlyMintOneNFT(uint256 num) public onlyAwake {
+    function sacrificeManyButOnlyMintOneNFT(uint256 num, string memory/*message*/) public onlyAwake {
         uint256 totalRemainingCultists;
         uint256 totalSacrificedCultists;
         uint256 requiredTokens;
@@ -898,8 +908,8 @@ contract DoomCultSocietyDAO is ERC20 {
         }
     }
 
-    function sacrifice() public onlyAwake {
-        sacrificeManyButOnlyMintOneNFT(1);
+    function sacrifice(string memory message) public onlyAwake {
+        sacrificeManyButOnlyMintOneNFT(1, message);
     }
 
     function worship() public payable onlyAwake {
