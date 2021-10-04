@@ -944,7 +944,7 @@ contract DoomCultSocietyDAO is ERC20 {
      *
      *  What do we do with these funds? Well, we could fairly redistribute them
      *  to the DAO's stakeholders...but who has time to bother with writing that code? Certainly not me!
-     *  Just send it to charity lol.
+     *  Just send it to charity lol. Cults are supposed to take money from their supporters, not give it back!
      */
     function placate() public payable onlyAwake {
         require(msg.value >= placateThreshold, 'TOO POOR');
