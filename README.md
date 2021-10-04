@@ -136,7 +136,7 @@ It's not that kind of crypto project . More of a "threw together over a weekend"
 
 # Doom Cult Society Rare-O-Meter &#x2728;
 
-Well now, imagine you're an aspiring cult master and have acquired a new Dead Cult Society NFT. This is a simple guide to determine the all-important question: _LOOKS RARE?_
+Well now, imagine you're an aspiring cult master and have acquired a new Doom Cult Society NFT. This is a simple guide to determine the all-important question: _LOOKS RARE?_
 
 ## 1: IS YOUR CULTIST SPINNY?
 
