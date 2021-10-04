@@ -45,7 +45,7 @@ describe('DoomCultSociety', function () {
 
     expect(await doomCultDAO.balanceOf(addr1.address)).to.equal(BigInt('1000000000000000002'));
     expect(await doomCultDAO.balanceOf(owner.address)).to.equal(BigInt('1999999999999999998'));
-    expect(await doomCultDAO.totalSupply()).to.equal(BigInt('1403000000000000000000'));
+    expect(await doomCultDAO.totalSupply()).to.equal(BigInt('2003000000000000000000'));
   });
 
   it('test awake', async function () {
@@ -72,7 +72,7 @@ describe('DoomCultSociety', function () {
     await doomCultDAO.deployed();
 
     await expect(doomCultDAO.worship()).to.be.reverted;
-    await expect(doomCultDAO.sacrifice()).to.be.reverted;
+    await expect(doomCultDAO.sacrifice('')).to.be.reverted;
   });
 
   it('test insufficient sacrifices', async function () {
@@ -85,6 +85,23 @@ describe('DoomCultSociety', function () {
 
     await expect(doomCultDAO.worship()).to.be.reverted;
 
+    await expect(doomCultDAO.placate()).to.be.reverted;
+
+    await expect(doomCultDAO.placate({ value: ethers.utils.parseEther('0.1') }));
+    expect(await doomCultDAO.placateThreshold()).to.equal(BigInt('200000000000000000'));
+
+    expect((await doomCultDAO.placationCount()).toNumber()).to.equal(1);
+
+    await expect(doomCultDAO.placate({ value: ethers.utils.parseEther('0.4') }));
+    expect((await doomCultDAO.placationCount()).toNumber()).to.equal(3);
+    expect(await doomCultDAO.placateThreshold()).to.equal(BigInt('400000000000000000'));
+
+    await doomCultDAO.forceAdvanceEpoch();
+
+    await doomCultDAO.worship();
+
+    expect((await doomCultDAO.placationCount()).toNumber()).to.equal(0);
+    expect(await doomCultDAO.placateThreshold()).to.equal(BigInt('400000000000000000'));
     await doomCultDAO.forceAdvanceEpoch();
 
     await doomCultDAO.worship();
@@ -102,7 +119,7 @@ describe('DoomCultSociety', function () {
 
     await expect(doomCultDAO.worship()).to.be.reverted;
 
-    await doomCultDAO.sacrifice();
+    await doomCultDAO.sacrifice('');
 
     expect(await doomCultDAO.totalSupply()).to.equal(BigInt('29999000000000000000000'));
     const [owner, addr1] = await ethers.getSigners();
@@ -110,9 +127,9 @@ describe('DoomCultSociety', function () {
     await doomCultDAO.transfer(addr1.address, BigInt('2000000000000000000'));
 
     expect(await doomCultDAO.balanceOf(addr1.address)).to.equal(BigInt('2000000000000000000'));
-    await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(0)).to.be.reverted;
-    await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(3)).to.be.reverted;
-    await doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(2);
+    await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(0, '')).to.be.reverted;
+    await expect(doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(3, '')).to.be.reverted;
+    await doomCultDAO.connect(addr1).sacrificeManyButOnlyMintOneNFT(2, '');
 
     expect((await doomCultDAO.balanceOf(addr1.address)).toNumber()).to.equal(0);
 
@@ -158,7 +175,7 @@ describe('DoomCultSociety', function () {
 
     await expect(doomCultDAO.worship()).to.be.reverted;
 
-    const tx = await (await doomCultDAO.sacrifice()).wait();
+    const tx = await (await doomCultDAO.sacrifice('')).wait();
     console.log('sacrifice cost: ', tx.gasUsed.toNumber());
     const nftId = tx.logs[0].data;
     const doomCultSociety = await getDoomCultSociety(doomCultDAO);
@@ -197,7 +214,7 @@ describe('DoomCultSociety', function () {
 
     await expect(doomCultDAO.worship()).to.be.reverted;
 
-    const tx = await (await doomCultDAO.sacrifice()).wait();
+    const tx = await (await doomCultDAO.sacrifice('')).wait();
     const nftId = tx.logs[0].data;
 
     const doomCultSociety = await getDoomCultSociety(doomCultDAO);

@@ -740,6 +740,13 @@ contract DoomCultSocietyDAO is ERC20 {
     uint256 public currentEpochTotalSacrificed;
     uint256 public lastEpochTotalSacrificed;
 
+    // How many times this week has the DAO been placated
+    uint256 public placationCount;
+    // How much does the cost increase by each time we placate?
+    uint256 private constant PLACATE_INTERVAL = 100000000000000000; // 0.1 eth in wei
+    // What is the current cost to placate?
+    uint256 public placateThreshold = PLACATE_INTERVAL;
+
     uint256 private constant IT_HAS_AWOKEN_SIG = 0x21807e0b842b099372e0a04f56a3c00df1f88de6af9d3e3ebb06d4d6fac76a8d;
     event ItHasAwoken(uint256 startNumCultists);
 
@@ -781,8 +788,8 @@ contract DoomCultSocietyDAO is ERC20 {
         assembly {
             sstore(sleepTimer.slot, add(timestamp(), mul(4, SECONDS_PER_WEEK)))
         }
-        // Mmmmmmmmmmm slightly corrupt cheeky premine aka 6% founder reward
-        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 800 * CURRENCY_MULTIPLIER; // some extra for givaways
+        // Mmmmmmmmmmm slightly corrupt cheeky premine aka 6.66% founder reward
+        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 1000 * CURRENCY_MULTIPLIER; // some extra for givaways
         _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 100 * CURRENCY_MULTIPLIER; // om
         _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 100 * CURRENCY_MULTIPLIER; // nom
@@ -791,11 +798,11 @@ contract DoomCultSocietyDAO is ERC20 {
         _balances[address(0x4a4866086D4b74521624Dbaec9478C9973Ff2C8e)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0xB658bF75C8968e8C9a577D5c8814803A1dDD0939)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0x99A94D55417aaCC993889d5C574B07F01Ad35920)] = 100 * CURRENCY_MULTIPLIER; // nom
-        _balances[address(0xE71f18D8F2e874AD3284C1A432A38fD158e35D70)] = 100 * CURRENCY_MULTIPLIER; // *burp*
-        _balances[address(0x934a19c7f2cD41D330d00C02884504fb59a33F36)] = 100 * CURRENCY_MULTIPLIER;
-        _totalSupply = 1800 * CURRENCY_MULTIPLIER;
+        _balances[address(0xE71f18D8F2e874AD3284C1A432A38fD158e35D70)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x934a19c7f2cD41D330d00C02884504fb59a33F36)] = 100 * CURRENCY_MULTIPLIER; // *burp*
+        _totalSupply = 2000 * CURRENCY_MULTIPLIER;
 
-        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 800 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 1000 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 100 * CURRENCY_MULTIPLIER);
@@ -808,6 +815,9 @@ contract DoomCultSocietyDAO is ERC20 {
         emit Transfer(address(0), address(0x934a19c7f2cD41D330d00C02884504fb59a33F36), 100 * CURRENCY_MULTIPLIER);
     }
 
+    /**
+     * @dev Acquire cultists!
+     */
     function attractCultists() public onlyAsleep {
         assembly {
             if lt(MAX_CULTISTS, add(1, sload(_totalSupply.slot))) {
@@ -831,6 +841,9 @@ contract DoomCultSocietyDAO is ERC20 {
         }
     }
 
+    /**
+     * @dev Awaken the wrath of the Doom Cult Society DAO!
+     */
     function wakeUp() public onlyAsleep {
         assembly {
             if iszero(
@@ -872,11 +885,15 @@ contract DoomCultSocietyDAO is ERC20 {
     }
 
     /**
-     * N.B. This function will only generate ONE NFT regardless of how many you sacrifice!!!!!
+     * @dev This function will only generate ONE NFT regardless of how many you sacrifice!!!!!
      *      If you want lots of NFTs call `sacrifice()` multiple times
      *      This function is for those who just want to run those numbers up for maximum chaos
+     * @param num number of cultists to sacrifice!
      */
-    function sacrificeManyButOnlyMintOneNFT(uint256 num, string memory/*message*/) public onlyAwake {
+    function sacrificeManyButOnlyMintOneNFT(
+        uint256 num,
+        string memory /*message*/
+    ) public onlyAwake {
         uint256 totalRemainingCultists;
         uint256 totalSacrificedCultists;
         uint256 requiredTokens;
@@ -908,10 +925,44 @@ contract DoomCultSocietyDAO is ERC20 {
         }
     }
 
+    /**
+     * @dev BLOOD FOR THE BLOOD GOD!
+     *
+     * @param message commemorate your sacrifice with a message to be recorded for all eternity
+     */
     function sacrifice(string memory message) public onlyAwake {
         sacrificeManyButOnlyMintOneNFT(1, message);
     }
 
+    /**
+     *  @dev Stuff the DAO with gold to soothe its wrath! When money talks, there are few interruptions.
+     *  
+     *  HOW IT WORKS
+     *  Users can push the required sacrifices down by 1 with some RAW ULTRA SOUND MONEY
+     *  Placate starts at 0.1 Eth, cost increases by 0.1 Eth per placation.
+     *  Yes, this gets stupid expensive very quickly! 
+     *
+     *  What do we do with these funds? Well, we could fairly redistribute them
+     *  to the DAO's stakeholders...but who has time to bother with writing that code? Certainly not me!
+     *  Just send it to charity lol.
+     */
+    function placate() public payable onlyAwake {
+        require(msg.value >= placateThreshold, 'TOO POOR');
+
+        uint256 numPlacations = msg.value / placateThreshold;
+
+        placationCount += numPlacations;
+
+        placateThreshold += (numPlacations * PLACATE_INTERVAL);
+
+        // GiveDirectly Eth address
+        (bool sent, ) = payable(0x750EF1D7a0b4Ab1c97B7A623D7917CcEb5ea779C).call{value: msg.value}('');
+        require(sent, 'Failed to send Ether');
+    }
+
+    /**
+     * @dev KNEEL PEON! KNEEL BEFORE YOUR MASTER!
+     */
     function worship() public payable onlyAwake {
         assembly {
             if gt(sload(timestampUntilNextEpoch.slot), add(timestamp(), 1)) {
@@ -923,7 +974,8 @@ contract DoomCultSocietyDAO is ERC20 {
             }
         }
 
-        if (lastEpochTotalSacrificed >= currentEpochTotalSacrificed) {
+        uint256 score = currentEpochTotalSacrificed + placationCount;
+        if (lastEpochTotalSacrificed >= score) {
             assembly {
                 // emit Obliterate(_totalSupply)
                 mstore(0x00, sload(_totalSupply.slot))
@@ -936,6 +988,7 @@ contract DoomCultSocietyDAO is ERC20 {
             sstore(currentEpochTotalSacrificed.slot, 0)
             sstore(timestampUntilNextEpoch.slot, add(timestamp(), SECONDS_PER_WEEK))
             sstore(doomCounter.slot, add(sload(doomCounter.slot), 1))
+            sstore(placationCount.slot, 0)
         }
         if (doomCounter == (WEEKS_UNTIL_OBLIVION + 1)) {
             obliterate();
