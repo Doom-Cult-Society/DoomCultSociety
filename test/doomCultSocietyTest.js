@@ -45,7 +45,7 @@ describe('DoomCultSociety', function () {
 
     expect(await doomCultDAO.balanceOf(addr1.address)).to.equal(BigInt('1000000000000000002'));
     expect(await doomCultDAO.balanceOf(owner.address)).to.equal(BigInt('1999999999999999998'));
-    expect(await doomCultDAO.totalSupply()).to.equal(BigInt('2003000000000000000000'));
+    expect(await doomCultDAO.totalSupply()).to.equal(BigInt('2001000000000000000000'));
   });
 
   it('test awake', async function () {

@@ -789,7 +789,7 @@ contract DoomCultSocietyDAO is ERC20 {
             sstore(sleepTimer.slot, add(timestamp(), mul(4, SECONDS_PER_WEEK)))
         }
         // Mmmmmmmmmmm slightly corrupt cheeky premine aka 6.66% founder reward
-        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 1000 * CURRENCY_MULTIPLIER; // some extra for givaways
+        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 998 * CURRENCY_MULTIPLIER; // some extra for givaways
         _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 100 * CURRENCY_MULTIPLIER; // om
         _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 100 * CURRENCY_MULTIPLIER; // nom
@@ -800,9 +800,9 @@ contract DoomCultSocietyDAO is ERC20 {
         _balances[address(0x99A94D55417aaCC993889d5C574B07F01Ad35920)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0xE71f18D8F2e874AD3284C1A432A38fD158e35D70)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0x934a19c7f2cD41D330d00C02884504fb59a33F36)] = 100 * CURRENCY_MULTIPLIER; // *burp*
-        _totalSupply = 2000 * CURRENCY_MULTIPLIER;
+        _totalSupply = 1998 * CURRENCY_MULTIPLIER;
 
-        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 1000 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 998 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 100 * CURRENCY_MULTIPLIER);
@@ -936,11 +936,11 @@ contract DoomCultSocietyDAO is ERC20 {
 
     /**
      *  @dev Stuff the DAO with gold to soothe its wrath! When money talks, there are few interruptions.
-     *  
+     *
      *  HOW IT WORKS
      *  Users can push the required sacrifices down by 1 with some RAW ULTRA SOUND MONEY
      *  Placate starts at 0.1 Eth, cost increases by 0.1 Eth per placation.
-     *  Yes, this gets stupid expensive very quickly! 
+     *  Yes, this gets stupid expensive very quickly!
      *
      *  What do we do with these funds? Well, we could fairly redistribute them
      *  to the DAO's stakeholders...but who has time to bother with writing that code? Certainly not me!
