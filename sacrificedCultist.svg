@@ -1,5 +1,5 @@
 <svg viewBox="0 0 700 800" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <style>.soft{font:700 20px sans-serif;fill:#ffffff88}.heavy{font:700 30px sans-serif;fill:#fff}.superheavy{font:700 40px sans-serif;fill:#fff}@-webkit-keyframes shine {from {-webkit-filter: hue-rotate(0deg);}to { -webkit-filter: hue-rotate(360deg); } }g { -webkit-animation: shine 0s ease-in-out infinite; }</style>
+    <style>.soft{font:700 20px sans-serif;fill:#ffffff88}.heavy{font:700 29px sans-serif;fill:#fff}.superheavy{font:700 40px sans-serif;fill:#fff}@-webkit-keyframes shine {from {-webkit-filter: hue-rotate(0deg);}to { -webkit-filter: hue-rotate(360deg); } }g { -webkit-animation: shine 0s ease-in-out infinite; }</style>
     <path d="M0 0h700v0800H0z" />
     <g transform="matrix(.1 0 0 -.1 -350 660)">
         <defs>

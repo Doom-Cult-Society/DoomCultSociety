@@ -789,7 +789,7 @@ contract DoomCultSocietyDAO is ERC20 {
             sstore(sleepTimer.slot, add(timestamp(), mul(4, SECONDS_PER_WEEK)))
         }
         // Mmmmmmmmmmm slightly corrupt cheeky premine aka 6.66% founder reward
-        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 998 * CURRENCY_MULTIPLIER; // some extra for givaways
+        _balances[address(0x24065d97424687EB9c83c87729fc1b916266F637)] = 898 * CURRENCY_MULTIPLIER; // some extra for givaways
         _balances[address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A)] = 100 * CURRENCY_MULTIPLIER; // om
         _balances[address(0x9436630F6475D04E1d396a255f1321e00171aBFE)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef)] = 100 * CURRENCY_MULTIPLIER; // nom
@@ -799,10 +799,11 @@ contract DoomCultSocietyDAO is ERC20 {
         _balances[address(0xB658bF75C8968e8C9a577D5c8814803A1dDD0939)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0x99A94D55417aaCC993889d5C574B07F01Ad35920)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0xE71f18D8F2e874AD3284C1A432A38fD158e35D70)] = 100 * CURRENCY_MULTIPLIER; // nom
+        _balances[address(0x31102499a64BEc6dC5Cc22FFDCBDc0551b2687Ab)] = 100 * CURRENCY_MULTIPLIER; // nom
         _balances[address(0x934a19c7f2cD41D330d00C02884504fb59a33F36)] = 100 * CURRENCY_MULTIPLIER; // *burp*
         _totalSupply = 1998 * CURRENCY_MULTIPLIER;
 
-        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 998 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x24065d97424687EB9c83c87729fc1b916266F637), 898 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x1E11a16335E410EB5f4e7A781C6f069609E5946A), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x9436630F6475D04E1d396a255f1321e00171aBFE), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x001aBc8196c60C2De9f9a2EdBdf8Db00C1Fa35ef), 100 * CURRENCY_MULTIPLIER);
@@ -812,6 +813,7 @@ contract DoomCultSocietyDAO is ERC20 {
         emit Transfer(address(0), address(0xB658bF75C8968e8C9a577D5c8814803A1dDD0939), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x99A94D55417aaCC993889d5C574B07F01Ad35920), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0xE71f18D8F2e874AD3284C1A432A38fD158e35D70), 100 * CURRENCY_MULTIPLIER);
+        emit Transfer(address(0), address(0x31102499a64BEc6dC5Cc22FFDCBDc0551b2687Ab), 100 * CURRENCY_MULTIPLIER);
         emit Transfer(address(0), address(0x934a19c7f2cD41D330d00C02884504fb59a33F36), 100 * CURRENCY_MULTIPLIER);
     }
 
@@ -1085,7 +1087,7 @@ contract DoomCultSociety is ERC721 {
                 mstore(585, t15)
                 mstore(605, '1999/xlink"><style>.soft{font:70')
                 mstore(637, '0 20px sans-serif;fill:#ffffff88')
-                mstore(669, '}.heavy{font:700 30px sans-serif')
+                mstore(669, '}.heavy{font:700 29px sans-serif')
                 mstore(701, ';fill:#fff}.superheavy{font:700 ')
                 mstore(733, '40px sans-serif;fill:#fff}@-webk')
                 mstore(765, 'it-keyframes shine {from {-webki')
@@ -1879,7 +1881,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table1, 256), 'Ripped Apart By')
             mstore(add(table1, 288), 'Sacrificed In The Service Of')
             mstore(add(table1, 320), 'Slaughtered Defending')
-            mstore(add(table1, 352), 'Succumbed To Burns From')
+            mstore(add(table1, 352), 'Suffered 3rd Degree Burns From')
             mstore(add(table1, 384), 'Torn To Shreds By')
             mstore(add(table1, 416), 'Vanished At A Party Hosted By')
             mstore(add(table1, 448), 'Vivisected Via')
@@ -1902,7 +1904,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table2, 256), 15)
             mstore(add(table2, 288), 28)
             mstore(add(table2, 320), 21)
-            mstore(add(table2, 352), 23)
+            mstore(add(table2, 352), 30)
             mstore(add(table2, 384), 17)
             mstore(add(table2, 416), 29)
             mstore(add(table2, 448), 14)
@@ -1954,6 +1956,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table1, 928), 'Winnie-The-Pooh Themed ')
             mstore(add(table1, 960), 'Gratuitously Violent ')
             mstore(add(table1, 992), 'Extremely Aggressive ')
+            mstore(add(table1, 1024), 'Enraged ')
 
             mstore(add(table2, 32), 19)
             mstore(add(table2, 64), 11)
@@ -1986,10 +1989,11 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table2, 928), 23)
             mstore(add(table2, 960), 21)
             mstore(add(table2, 992), 21)
+            mstore(add(table2, 1024), 8)
 
             let rare := eq(mod(rare1Seed, 100), 0) // mmmm rare communism...
 
-            idx := mul(iszero(rare), add(0x20, shl(5, mod(phrase3Seed, 31))))
+            idx := mul(iszero(rare), add(0x20, shl(5, mod(phrase3Seed, 32))))
             let phrase3 := mload(add(table1, idx))
             let phrase3Len := mload(add(table2, idx))
 
@@ -2021,6 +2025,7 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table1, 800), 'Budget Cuts')
             mstore(add(table1, 832), 'Scurvy')
             mstore(add(table1, 864), 'Knife-Wielding Geese')
+            mstore(add(table1, 896), 'Venture Capitalists')
 
             mstore(table2, 23)
             mstore(add(table2, 32), 22)
@@ -2050,7 +2055,9 @@ contract DoomCultSociety is ERC721 {
             mstore(add(table2, 800), 11)
             mstore(add(table2, 832), 6)
             mstore(add(table2, 864), 20)
-            idx := mul(iszero(rare), add(0x20, shl(5, mod(phrase4Seed, 27))))
+            mstore(add(table2, 896), 19)
+
+            idx := mul(iszero(rare), add(0x20, shl(5, mod(phrase4Seed, 28))))
             let phrase4 := mload(add(table1, idx))
             let phrase4Len := mload(add(table2, idx))
 

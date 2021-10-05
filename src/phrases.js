@@ -24,7 +24,7 @@ const phraseList2 = [
   'Ripped Apart By',
   'Sacrificed In The Service Of',
   'Slaughtered Defending',
-  'Succumbed To Burns From',
+  'Suffered 3rd Degree Burns From',
   'Torn To Shreds By',
   'Vanished At A Party Hosted By',
   'Vivisected Via',
@@ -70,6 +70,7 @@ const phraseList3 = [
   'Winnie-The-Pooh Themed ',
   'Gratuitously Violent ',
   'Extremely Aggressive ',
+  'Enraged ',
 ];
 
 const phraseList4 = [
@@ -100,6 +101,7 @@ const phraseList4 = [
   'Budget Cuts',
   'Scurvy',
   'Knife-Wielding Geese',
+  'Venture Capitalists',
 ];
 
 exports.phraseList1 = phraseList1;
